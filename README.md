@@ -17,12 +17,12 @@ _No more lost bug reports. No more emails. Just pure, organized issue management
 
 ## 🔥 Features that actually matter
 
-- 🔒 **Secure User Authentication:** Full JWT-based login and registration system protecting your data.
-- 🎯 **Full CRUD Mastery:** Unrestricted ability to Create, Read, Update, and Delete your tickets safely.
-- ⚡ **Real-time State Magic:** Instant DOM updates without frustrating page reloads, thanks to React's highly optimized state management.
-- 🎨 **Beautiful UI/UX:** A carefully crafted, responsive interface using **Tailwind CSS** that looks gorgeous on both mobile and desktop.
-- 🚦 **Smart Triage:** Automatic visual color coding and categorization based on ticket priority (Low, Medium, High).
-- 🏗️ **Robust Architecture:** A decoupled RESTful API backend ensuring strict separation of concerns.
+- 🏢 **Team Workspaces:** Create an organization, invite team members via secure 6-character codes, and collaborate dynamically across the team's shared issues dashboard.
+- 📋 **Trello-style Kanban Board:** Intuitive, horizontal pipelines (Open, In Progress, Resolved) for instant visual tracking and fast status progression.
+- 💬 **Live Ticket Discussions:** In-ticket comment threads allowing rapid debugging and context-sharing among teammates right where the problem lives.
+- 🔔 **Real-Time Notifications:** Stay instantly aware of new bugs, status changes, and teammate comments via an elegant Dropdown Notification Bell.
+- � **Full Accountability:** Immutable ticket history tracking exactly _who_ opened a ticket, and who pushed the final "Resolve" button with exact timestamps.
+- 🔒 **Secure Authentication & Profiles:** Robust JWT-based Login, Registration, and User Profile Management protected by bcrypt hashing.
 
 ---
 
