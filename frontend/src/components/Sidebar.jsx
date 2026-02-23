@@ -116,7 +116,7 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
                 ></div>
             )}
 
-            <aside className={`fixed inset-y-0 left-0 z-50 flex flex-col w-80 h-[100dvh] p-6 theme-panel backdrop-blur-3xl shadow-[4px_0_24px_rgba(0,0,0,0.5)] custom-scrollbar theme-text md:relative transform transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] shrink-0 overflow-y-auto theme-border md:rounded-r-[2rem] 
+            <aside className={`fixed inset-y-0 left-0 z-50 flex flex-col w-[85vw] max-w-sm sm:w-80 h-[100dvh] p-6 theme-panel backdrop-blur-3xl shadow-[4px_0_24px_rgba(0,0,0,0.5)] custom-scrollbar theme-text md:relative transform transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] shrink-0 overflow-y-auto theme-border md:rounded-r-[2rem] 
               ${isOpen
                     ? 'translate-x-0 border-r opacity-100 md:ml-0'
                     : '-translate-x-full opacity-0 md:border-none md:-ml-80'

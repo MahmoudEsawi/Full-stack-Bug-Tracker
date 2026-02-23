@@ -341,8 +341,8 @@ function Dashboard({ token, handleLogout }) {
         <div className="w-full max-w-7xl mx-auto">
 
           {/* Header Section */}
-          <header className="mb-10 flex flex-col md:flex-row justify-between items-center glass-panel p-6 md:p-8 rounded-[2rem] shadow-2xl shadow-black/20">
-            <div className="w-full md:w-auto flex justify-between items-center mb-6 md:mb-0">
+          <header className="mb-10 flex flex-col md:flex-row justify-between md:items-center glass-panel p-6 md:p-8 rounded-[2rem] shadow-2xl shadow-black/20 gap-6">
+            <div className="w-full md:w-auto flex justify-between items-center">
               <div>
                 <h1 className="text-3xl md:text-5xl font-black theme-text tracking-tight mb-2 md:mb-3">
                   <span className="text-indigo-500 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-fuchsia-500">Nexus</span> Tracker
@@ -352,7 +352,7 @@ function Dashboard({ token, handleLogout }) {
 
               {/* Sidebar Toggle Button */}
               <button
-                className={`${isSidebarOpen ? 'hidden' : 'block'} p-2 rounded-xl theme-panel theme-muted theme-hover transition-colors`}
+                className={`${isSidebarOpen ? 'hidden md:block opacity-0 pointer-events-none' : 'block'} p-2 rounded-xl theme-panel theme-muted theme-hover transition-colors`}
                 onClick={() => setIsSidebarOpen(true)}
                 title="Open Sidebar"
               >
@@ -362,7 +362,7 @@ function Dashboard({ token, handleLogout }) {
               </button>
             </div>
             {decodedToken?.user?.teamId && (
-              <div className="mt-6 md:mt-0 flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
 
                 {/* Theme Toggle Button */}
                 <button
@@ -400,7 +400,7 @@ function Dashboard({ token, handleLogout }) {
 
                   {/* Notifications Dropdown */}
                   {showNotifications && (
-                    <div className="absolute right-0 mt-3 w-80 theme-panel backdrop-blur-3xl rounded-2xl shadow-2xl overflow-hidden z-50 animate-[scale-in_0.2s_ease-out] origin-top-right">
+                    <div className="absolute right-0 sm:-right-4 mt-3 w-[280px] sm:w-80 max-w-[90vw] theme-panel backdrop-blur-3xl rounded-2xl shadow-2xl overflow-hidden z-50 animate-[scale-in_0.2s_ease-out] origin-top-right">
                       <div className="bg-black/20 p-4 border-b theme-border flex justify-between items-center">
                         <h4 className="font-bold theme-text">Notifications</h4>
                         {unreadCount > 0 && <span className="bg-indigo-500/20 text-indigo-500 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-indigo-500/30">{unreadCount} New</span>}
@@ -547,7 +547,7 @@ function Dashboard({ token, handleLogout }) {
                       <Droppable key={col.status} droppableId={col.status}>
                         {(provided, snapshot) => (
                           <div
-                            className={`flex-[1] xl:w-[350px] min-w-[320px] rounded-[2rem] border theme-border theme-panel p-4 flex flex-col shadow-inner max-h-[70vh] ${snapshot.isDraggingOver ? 'bg-indigo-500/10' : ''}`}
+                            className={`flex-[1] xl:w-[350px] min-w-[280px] sm:min-w-[320px] rounded-[2rem] border theme-border theme-panel p-4 flex flex-col shadow-inner max-h-[70vh] ${snapshot.isDraggingOver ? 'bg-indigo-500/10' : ''}`}
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                           >
