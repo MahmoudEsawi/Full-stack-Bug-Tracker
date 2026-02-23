@@ -158,8 +158,8 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
                     <div className="mb-10 text-center md:text-left mt-4 md:mt-0 relative shrink-0">
                         <div className="absolute top-1/2 left-4 w-12 h-12 bg-indigo-500/20 blur-[20px] rounded-full pointer-events-none -translate-y-1/2"></div>
                         <h1 className="text-3xl font-black theme-text tracking-tight flex items-center justify-center md:justify-start gap-2 relative z-10 w-max">
-                            <span className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-sm shadow-[0_0_15px_rgba(99,102,241,0.5)] border border-indigo-400/50">N</span>
-                            Nexus<span className="text-fuchsia-500 text-lg">v2</span>
+                            <span className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-sm shadow-[0_0_15px_rgba(99,102,241,0.5)] border border-indigo-400/50">S</span>
+                            SyncIssue<span className="text-fuchsia-500 text-lg">v2</span>
                         </h1>
                         <p className="theme-muted text-xs mt-2 uppercase tracking-widest font-bold w-max">Workspace Portal</p>
                     </div>

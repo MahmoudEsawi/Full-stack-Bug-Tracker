@@ -450,7 +450,7 @@ function Dashboard({ token, handleLogout }) {
               <div className="w-24 h-24 bg-indigo-500/10 border border-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-6 relative z-10 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
                 <span className="text-4xl text-indigo-500">❖</span>
               </div>
-              <h2 className="text-3xl font-black theme-text mb-4 relative z-10">Welcome to <span className="text-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.4)]">Nexus</span></h2>
+              <h2 className="text-3xl font-black theme-text mb-4 relative z-10">Welcome to <span className="text-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.4)]">SyncIssue</span></h2>
               <p className="theme-muted font-medium max-w-lg mx-auto leading-relaxed relative z-10">
                 To get started, please create a new workspace or join an existing one using the options in the sidebar.
               </p>
