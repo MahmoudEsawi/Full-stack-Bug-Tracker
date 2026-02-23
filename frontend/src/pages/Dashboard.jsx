@@ -65,6 +65,24 @@ function Dashboard({ token, handleLogout }) {
     }
   };
 
+  // Change Team Code dynamically
+  const handleChangeTeam = async () => {
+    const newTeamCode = window.prompt("Enter the new Team Code to join:\n(Leave blank to cancel)");
+
+    if (!newTeamCode || newTeamCode.trim() === '') return;
+
+    try {
+      const res = await axios.put('/api/auth/team', { newTeamCode }, authConfig);
+      // Update the local storage with the new token
+      localStorage.setItem('token', res.data.token);
+      // Force a full reload to elegantly re-initialize the app with the new team scope
+      window.location.reload();
+    } catch (error) {
+      console.error("Error changing team:", error);
+      alert(error.response?.data?.message || "Failed to change team. Please try again.");
+    }
+  };
+
   // Filter tickets based on search query
   const filteredTickets = tickets.filter(ticket =>
     ticket.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -111,6 +129,12 @@ function Dashboard({ token, handleLogout }) {
               <span className="block text-xs text-emerald-600 uppercase font-bold tracking-wider mb-1">Resolved</span>
               <span className="text-3xl font-black text-emerald-700">{resolvedCount}</span>
             </div>
+            <button
+              onClick={handleChangeTeam}
+              className="ml-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 px-5 py-3 rounded-2xl font-bold transition-all shadow-sm flex items-center gap-2"
+            >
+              Change Team
+            </button>
             <button
               onClick={handleLogout}
               className="ml-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 border border-red-200 px-5 py-3 rounded-2xl font-bold transition-all shadow-sm flex items-center gap-2"
