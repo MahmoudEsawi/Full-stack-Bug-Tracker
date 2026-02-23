@@ -207,156 +207,155 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
                             </div>
                         </div>
                     ) : (
-                        <div className="flex-1 flex flex-col justify-between">
+                        <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 min-h-0 flex flex-col gap-6">
                             {/* Active Team State */}
-                            <div>
-                                <div className="bg-indigo-500/10 border border-indigo-500/20 p-5 rounded-2xl mb-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-500/10 blur-[40px] rounded-full"></div>
-                                    <div className="w-16 h-16 bg-indigo-500 border border-indigo-400/50 rounded-full flex items-center justify-center text-2xl font-black text-white mb-3 shadow-[0_0_20px_rgba(99,102,241,0.5)] relative z-10">
-                                        {user.username.charAt(0).toUpperCase()}
-                                    </div>
-                                    <h2 className="theme-text font-bold text-lg relative z-10">{user.username}</h2>
-                                    <span className={`mt-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest relative z-10 ${user.role === 'Admin' ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30' : 'theme-panel theme-muted'}`}>
-                                        {user.role}
-                                    </span>
+
+                            {/* Profile Header */}
+                            <div className="bg-indigo-500/10 border border-indigo-500/20 p-5 rounded-2xl flex flex-col items-center justify-center text-center relative overflow-hidden shrink-0">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-500/10 blur-[40px] rounded-full"></div>
+                                <div className="w-16 h-16 bg-indigo-500 border border-indigo-400/50 rounded-full flex items-center justify-center text-2xl font-black text-white mb-3 shadow-[0_0_20px_rgba(99,102,241,0.5)] relative z-10">
+                                    {user.username.charAt(0).toUpperCase()}
                                 </div>
-
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between p-4 theme-panel rounded-xl shadow-inner">
-                                        <span className="text-sm font-medium theme-muted">Status</span>
-                                        <span className="flex items-center gap-2 text-xs font-bold text-emerald-500 tracking-wider uppercase">
-                                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span> Online
-                                        </span>
-                                    </div>
-
-                                    {/* Projects Section */}
-                                    <div className="mt-8 mb-4">
-                                        <div className="flex items-center justify-between mb-3 px-1">
-                                            <h3 className="text-[10px] font-black theme-muted uppercase tracking-widest">Projects</h3>
-                                            <span className="theme-bg theme-border border text-xs px-2 py-0.5 rounded-full font-bold theme-muted">{projects?.length || 0}</span>
-                                        </div>
-
-                                        <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 mb-4 min-h-0 space-y-2">
-                                            {projects?.length === 0 ? (
-                                                <p className="text-xs theme-muted font-medium">No projects found. Create one below.</p>
-                                            ) : (
-                                                projects.map(project => (
-                                                    <div
-                                                        key={project._id}
-                                                        onClick={() => setSelectedProjectId(project._id)}
-                                                        className={`flex items-center justify-between gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 group ${selectedProjectId === project._id ? 'bg-indigo-500/20 border border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.15)] translate-x-1' : 'theme-panel theme-border border hover:border-indigo-500/30 hover:bg-indigo-500/5'}`}
-                                                    >
-                                                        <div className="flex items-center gap-3 overflow-hidden flex-1">
-                                                            <div className={`w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold shadow-sm transition-colors ${selectedProjectId === project._id ? 'bg-indigo-500 text-white' : 'theme-bg theme-border border theme-muted group-hover:border-indigo-500/50 group-hover:text-indigo-400'}`}>
-                                                                {project.name.substring(0, 2).toUpperCase()}
-                                                            </div>
-                                                            <p className={`text-sm font-bold truncate transition-colors ${selectedProjectId === project._id ? 'text-indigo-500' : 'theme-text group-hover:text-indigo-400'}`}>{project.name}</p>
-                                                        </div>
-
-                                                        {/* Delete Project Button (Only visible on hover or if selected, and if Admin or Creator) */}
-                                                        {(user.role === 'Admin' || project.createdBy === user.id) && (
-                                                            <button
-                                                                onClick={(e) => handleDeleteProject(e, project._id, project.name)}
-                                                                className={`p-1.5 rounded-lg shrink-0 transition-all ${selectedProjectId === project._id ? 'text-red-400 hover:bg-red-500/20 hover:text-red-500' : 'text-transparent hover:bg-red-500/10 hover:text-red-500 group-hover:text-red-400/50'}`}
-                                                                title="Delete Project"
-                                                            >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                ))
-                                            )}
-                                        </div>
-
-                                        {isCreatingProject ? (
-                                            <form onSubmit={handleCreateProject} className="theme-panel border border-indigo-500/30 p-3.5 rounded-xl flex flex-col gap-3 shadow-[0_0_20px_rgba(99,102,241,0.1)] transition-all">
-                                                <div className="flex items-center justify-between mb-1">
-                                                    <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">New Project</span>
-                                                    <button type="button" onClick={() => setIsCreatingProject(false)} className="theme-muted hover:text-red-500">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                                                    </button>
-                                                </div>
-                                                <input type="text" placeholder="Project Name" required autoFocus className="theme-input theme-border border rounded-lg p-2.5 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium" value={projectName} onChange={e => setProjectName(e.target.value)} />
-                                                <button disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_10px_rgba(99,102,241,0.4)] text-xs font-bold py-2.5 rounded-lg transition-all">
-                                                    {loading ? 'Creating...' : 'Create Project'}
-                                                </button>
-                                            </form>
-                                        ) : (
-                                            <button
-                                                onClick={() => setIsCreatingProject(true)}
-                                                className="w-full theme-bg hover:theme-panel theme-muted hover:text-indigo-500 theme-border border text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                                                Create Project
-                                            </button>
-                                        )}
-                                    </div>
-
-                                    {/* Team Members List */}
-                                    {teamData?.members && teamData.members.length > 0 && (
-                                        <div className="mt-8 mb-4">
-                                            <div className="flex items-center justify-between mb-3 px-1">
-                                                <h3 className="text-[10px] font-black theme-muted uppercase tracking-widest">Team Members</h3>
-                                                <span className="theme-bg theme-border border text-xs px-2 py-0.5 rounded-full font-bold theme-muted">{teamData.members.length}</span>
-                                            </div>
-                                            <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
-                                                {teamData.members.map(member => (
-                                                    <div key={member._id} className="flex items-center gap-3 p-3 rounded-xl theme-panel theme-border border hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-colors group">
-                                                        <div className="w-8 h-8 rounded-full theme-bg theme-border border flex items-center justify-center text-xs font-bold theme-muted shadow-sm group-hover:border-indigo-500/50 transition-colors shrink-0">
-                                                            {member.username.charAt(0).toUpperCase()}
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <p className="text-sm font-bold theme-text truncate group-hover:text-indigo-400 transition-colors">{member.username}</p>
-                                                            <p className={`text-[9px] font-bold uppercase tracking-widest ${member.role === 'Admin' ? 'text-amber-500' : 'theme-muted'}`}>
-                                                                {member.role}
-                                                            </p>
-                                                        </div>
-
-                                                        {/* Kick Member Button (Only Admin sees it, and cannot kick themselves) */}
-                                                        {user.role === 'Admin' && member._id !== user.id && (
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleKickMember(member._id);
-                                                                }}
-                                                                className="opacity-0 group-hover:opacity-100 theme-muted hover:text-red-500 p-1.5 hover:bg-red-500/10 rounded-lg transition-all border border-transparent hover:border-red-500/20"
-                                                                title={`Kick ${member.username}`}
-                                                            >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M22 10.5h-6m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" /></svg>
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Only Admins can see raw invite code concepts */}
-                                    {user.role === 'Admin' && (
-                                        <div className="p-4 bg-amber-500/5 rounded-xl border border-amber-500/20 mt-6 relative overflow-hidden">
-                                            <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 blur-[30px] rounded-full pointer-events-none"></div>
-                                            <span className="block text-[10px] font-black text-amber-500 uppercase tracking-widest mb-2 relative z-10">Team Management</span>
-                                            <p className="text-[11px] text-amber-500/80 mb-4 leading-relaxed font-medium relative z-10">As an Admin, share this invite code to add members.</p>
-
-                                            <div className="theme-input border border-amber-500/30 rounded-lg p-3 flex justify-center items-center mb-3 shadow-inner relative z-10">
-                                                <span className="font-mono text-amber-500 font-black tracking-widest text-xl">{teamData?.code || "Loading..."}</span>
-                                            </div>
-
-                                            <button
-                                                onClick={handleCopyCode}
-                                                className="w-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-500 font-bold py-2.5 rounded-lg text-xs transition-colors shadow-[0_0_15px_rgba(245,158,11,0.1)] hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] flex items-center justify-center gap-2 relative z-10"
-                                            >
-                                                Copy Invite Code
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
+                                <h2 className="theme-text font-bold text-lg relative z-10">{user.username}</h2>
+                                <span className={`mt-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest relative z-10 ${user.role === 'Admin' ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30' : 'theme-panel theme-muted'}`}>
+                                    {user.role}
+                                </span>
                             </div>
+
+                            {/* Status */}
+                            <div className="flex items-center justify-between p-4 theme-panel rounded-xl shadow-inner shrink-0">
+                                <span className="text-sm font-medium theme-muted">Status</span>
+                                <span className="flex items-center gap-2 text-xs font-bold text-emerald-500 tracking-wider uppercase">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span> Online
+                                </span>
+                            </div>
+
+                            {/* Projects Section */}
+                            <div className="shrink-0">
+                                <div className="flex items-center justify-between mb-3 px-1">
+                                    <h3 className="text-[10px] font-black theme-muted uppercase tracking-widest">Projects</h3>
+                                    <span className="theme-bg theme-border border text-xs px-2 py-0.5 rounded-full font-bold theme-muted">{projects?.length || 0}</span>
+                                </div>
+
+                                <div className="space-y-2 mb-4">
+                                    {projects?.length === 0 ? (
+                                        <p className="text-xs theme-muted font-medium">No projects found. Create one below.</p>
+                                    ) : (
+                                        projects.map(project => (
+                                            <div
+                                                key={project._id}
+                                                onClick={() => setSelectedProjectId(project._id)}
+                                                className={`flex items-center justify-between gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 group ${selectedProjectId === project._id ? 'bg-indigo-500/20 border border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.15)] translate-x-1' : 'theme-panel theme-border border hover:border-indigo-500/30 hover:bg-indigo-500/5'}`}
+                                            >
+                                                <div className="flex items-center gap-3 overflow-hidden flex-1">
+                                                    <div className={`w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold shadow-sm transition-colors ${selectedProjectId === project._id ? 'bg-indigo-500 text-white' : 'theme-bg theme-border border theme-muted group-hover:border-indigo-500/50 group-hover:text-indigo-400'}`}>
+                                                        {project.name.substring(0, 2).toUpperCase()}
+                                                    </div>
+                                                    <p className={`text-sm font-bold truncate transition-colors ${selectedProjectId === project._id ? 'text-indigo-500' : 'theme-text group-hover:text-indigo-400'}`}>{project.name}</p>
+                                                </div>
+
+                                                {/* Delete Project Button (Only visible on hover or if selected, and if Admin or Creator) */}
+                                                {(user.role === 'Admin' || project.createdBy === user.id) && (
+                                                    <button
+                                                        onClick={(e) => handleDeleteProject(e, project._id, project.name)}
+                                                        className={`p-1.5 rounded-lg shrink-0 transition-all ${selectedProjectId === project._id ? 'text-red-400 hover:bg-red-500/20 hover:text-red-500' : 'text-transparent hover:bg-red-500/10 hover:text-red-500 group-hover:text-red-400/50'}`}
+                                                        title="Delete Project"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+
+                                {isCreatingProject ? (
+                                    <form onSubmit={handleCreateProject} className="theme-panel border border-indigo-500/30 p-3.5 rounded-xl flex flex-col gap-3 shadow-[0_0_20px_rgba(99,102,241,0.1)] transition-all">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">New Project</span>
+                                            <button type="button" onClick={() => setIsCreatingProject(false)} className="theme-muted hover:text-red-500">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                            </button>
+                                        </div>
+                                        <input type="text" placeholder="Project Name" required autoFocus className="theme-input theme-border border rounded-lg p-2.5 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium" value={projectName} onChange={e => setProjectName(e.target.value)} />
+                                        <button disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_10px_rgba(99,102,241,0.4)] text-xs font-bold py-2.5 rounded-lg transition-all">
+                                            {loading ? 'Creating...' : 'Create Project'}
+                                        </button>
+                                    </form>
+                                ) : (
+                                    <button
+                                        onClick={() => setIsCreatingProject(true)}
+                                        className="w-full theme-bg hover:theme-panel theme-muted hover:text-indigo-500 theme-border border text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                                        Create Project
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Team Members List */}
+                            {teamData?.members && teamData.members.length > 0 && (
+                                <div className="shrink-0">
+                                    <div className="flex items-center justify-between mb-3 px-1">
+                                        <h3 className="text-[10px] font-black theme-muted uppercase tracking-widest">Team Members</h3>
+                                        <span className="theme-bg theme-border border text-xs px-2 py-0.5 rounded-full font-bold theme-muted">{teamData.members.length}</span>
+                                    </div>
+                                    <div className="space-y-2">
+                                        {teamData.members.map(member => (
+                                            <div key={member._id} className="flex items-center gap-3 p-3 rounded-xl theme-panel theme-border border hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-colors group">
+                                                <div className="w-8 h-8 rounded-full theme-bg theme-border border flex items-center justify-center text-xs font-bold theme-muted shadow-sm group-hover:border-indigo-500/50 transition-colors shrink-0">
+                                                    {member.username.charAt(0).toUpperCase()}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-bold theme-text truncate group-hover:text-indigo-400 transition-colors">{member.username}</p>
+                                                    <p className={`text-[9px] font-bold uppercase tracking-widest ${member.role === 'Admin' ? 'text-amber-500' : 'theme-muted'}`}>
+                                                        {member.role}
+                                                    </p>
+                                                </div>
+
+                                                {/* Kick Member Button (Only Admin sees it, and cannot kick themselves) */}
+                                                {user.role === 'Admin' && member._id !== user.id && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleKickMember(member._id);
+                                                        }}
+                                                        className="opacity-0 group-hover:opacity-100 theme-muted hover:text-red-500 p-1.5 hover:bg-red-500/10 rounded-lg transition-all border border-transparent hover:border-red-500/20"
+                                                        title={`Kick ${member.username}`}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M22 10.5h-6m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" /></svg>
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Only Admins can see raw invite code concepts */}
+                            {user.role === 'Admin' && (
+                                <div className="p-4 bg-amber-500/5 rounded-xl border border-amber-500/20 mt-4 relative overflow-hidden shrink-0">
+                                    <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 blur-[30px] rounded-full pointer-events-none"></div>
+                                    <span className="block text-[10px] font-black text-amber-500 uppercase tracking-widest mb-2 relative z-10">Team Management</span>
+                                    <p className="text-[11px] text-amber-500/80 mb-4 leading-relaxed font-medium relative z-10">As an Admin, share this invite code to add members.</p>
+
+                                    <div className="theme-input border border-amber-500/30 rounded-lg p-3 flex justify-center items-center mb-3 shadow-inner relative z-10">
+                                        <span className="font-mono text-amber-500 font-black tracking-widest text-xl">{teamData?.code || "Loading..."}</span>
+                                    </div>
+
+                                    <button
+                                        onClick={handleCopyCode}
+                                        className="w-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-500 font-bold py-2.5 rounded-lg text-xs transition-colors shadow-[0_0_15px_rgba(245,158,11,0.1)] hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] flex items-center justify-center gap-2 relative z-10"
+                                    >
+                                        Copy Invite Code
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
 
                     {/* Footer Area */}
-                    <div className="mt-auto pt-8">
+                    <div className="mt-auto pt-6 shrink-0 z-10 bg-gradient-to-t from-[var(--bg-app)] to-transparent md:bg-none">
                         <button
                             onClick={handleLogout}
                             className="w-full mb-3 flex items-center justify-center gap-2 theme-input hover:theme-panel theme-muted hover:text-red-500 theme-border border hover:border-red-500/30 py-3 rounded-xl font-bold transition-all text-sm"
