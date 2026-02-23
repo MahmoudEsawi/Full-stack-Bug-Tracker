@@ -248,4 +248,53 @@ router.put('/profile', authMiddleware, async (req, res) => {
     }
 });
 
+// @route   DELETE /api/auth/team/kick/:userId
+// @desc    Admin kicks a member from the team
+router.delete('/team/kick/:userId', authMiddleware, async (req, res) => {
+    try {
+        // 1. Verify the requester is an Admin
+        if (req.user.role !== 'Admin') {
+            return res.status(403).json({ message: 'Only team admins can remove members.' });
+        }
+
+        const teamId = req.user.teamId;
+        const userIdToKick = req.params.userId;
+
+        // 2. Prevent admin from kicking themselves
+        if (userIdToKick === req.user.id) {
+            return res.status(400).json({ message: 'You cannot kick yourself.' });
+        }
+
+        // 3. Find the user to kick
+        const userToKick = await User.findById(userIdToKick);
+        if (!userToKick) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // 4. Verify the user is actually in this team
+        if (String(userToKick.team) !== String(teamId)) {
+            return res.status(400).json({ message: 'User is not in your team.' });
+        }
+
+        // 5. Remove team association from user
+        userToKick.team = null;
+        userToKick.role = 'Member'; // Reset role just in case
+        await userToKick.save();
+
+        // 6. Remove user from Team members array
+        await Team.findByIdAndUpdate(teamId, {
+            $pull: { members: userIdToKick }
+        });
+
+        // Optional: Remove tickets assigned to this user from the team?
+        // Let's leave their tickets as unassigned or keep them assigned depending on business logic.
+
+        res.json({ message: 'User successfully removed from the team.', kickedUserId: userIdToKick });
+
+    } catch (err) {
+        console.error('Error kicking user:', err.message);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
 module.exports = router;

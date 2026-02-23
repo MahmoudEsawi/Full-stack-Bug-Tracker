@@ -92,22 +92,37 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
         }
     };
 
+    const handleKickMember = async (memberId) => {
+        if (!window.confirm("Are you sure you want to remove this member from the team?")) return;
+
+        try {
+            await axios.delete(`/api/auth/team/kick/${memberId}`, authConfig);
+            // Refresh team data
+            const res = await axios.get('/api/auth/team', authConfig);
+            setTeamData(res.data);
+        } catch (error) {
+            console.error(error);
+            alert(error.response?.data?.message || "Failed to remove member.");
+        }
+    };
+
     return (
         <>
-            {/* Mobile Overlay Background */}
-            {isOpen && (
+            {/* Mobile Overlay Background - Only shown when Sidebar is open on small screens */}
+            {isOpen && window.innerWidth < 768 && (
                 <div
-                    className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 md:hidden"
+                    className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 md:hidden transition-opacity duration-300"
                     onClick={toggleSidebar}
                 ></div>
             )}
 
-            <aside className={`fixed md:sticky top-0 left-0 w-80 glass-panel border-r border-slate-800/60 shadow-[4px_0_24px_rgba(0,0,0,0.5)] flex flex-col h-screen text-slate-300 md:rounded-r-[2rem] p-8 z-50 transition-all duration-300 ease-in-out ${isOpen ? 'translate-x-0 opacity-100 visible' : '-translate-x-full opacity-0 invisible absolute md:hidden'}`}>
+            <aside className={`fixed top-0 left-0 w-80 glass-panel border-r border-slate-800/60 shadow-[4px_0_24px_rgba(0,0,0,0.5)] flex flex-col h-[100dvh] overflow-y-auto custom-scrollbar text-slate-300 md:rounded-r-[2rem] p-6 z-50 transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
 
-                {/* Mobile Close Button */}
+                {/* Close Button (Visible on all screens to hide the Sidebar) */}
                 <button
                     onClick={toggleSidebar}
-                    className="md:hidden absolute top-6 right-6 text-slate-400 hover:text-white transition-colors bg-slate-800/50 border border-slate-700 p-2 rounded-xl"
+                    className="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors bg-slate-800/50 border border-slate-700 p-2 rounded-xl"
+                    title="Close Sidebar"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -250,7 +265,7 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
                                         <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
                                             {teamData.members.map(member => (
                                                 <div key={member._id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/40 border border-slate-700/30 hover:bg-slate-800 transition-colors group">
-                                                    <div className="w-8 h-8 rounded-full bg-[#050511] border border-slate-700 flex items-center justify-center text-xs font-bold text-slate-300 shadow-sm group-hover:border-indigo-500/50 transition-colors">
+                                                    <div className="w-8 h-8 rounded-full bg-[#050511] border border-slate-700 flex items-center justify-center text-xs font-bold text-slate-300 shadow-sm group-hover:border-indigo-500/50 transition-colors shrink-0">
                                                         {member.username.charAt(0).toUpperCase()}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
@@ -259,6 +274,20 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
                                                             {member.role}
                                                         </p>
                                                     </div>
+
+                                                    {/* Kick Member Button (Only Admin sees it, and cannot kick themselves) */}
+                                                    {user.role === 'Admin' && member._id !== user.id && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleKickMember(member._id);
+                                                            }}
+                                                            className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 p-1.5 hover:bg-red-500/10 rounded-lg transition-all border border-transparent hover:border-red-500/20"
+                                                            title={`Kick ${member.username}`}
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M22 10.5h-6m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" /></svg>
+                                                        </button>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>
