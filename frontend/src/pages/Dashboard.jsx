@@ -3,6 +3,7 @@ import axios from 'axios';
 import { format } from 'date-fns'; // We'll install date-fns next
 import { jwtDecode } from 'jwt-decode';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import Sidebar from '../components/Sidebar';
 
 const API_URL = '/api/tickets';
@@ -157,6 +158,26 @@ function Dashboard({ token, handleLogout }) {
     }
   };
 
+  // Handle Drag and Drop End
+  const onDragEnd = async (result) => {
+    const { destination, source, draggableId } = result;
+    if (!destination) return;
+    if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+
+    // Optimistically update UI
+    const updatedTickets = Array.from(tickets);
+    const draggedTicket = updatedTickets.find(t => t._id === draggableId);
+    if (!draggedTicket) return;
+
+    if (destination.droppableId !== source.droppableId) {
+      draggedTicket.status = destination.droppableId;
+      setTickets(updatedTickets);
+
+      // Update Backend
+      await handleUpdateStatus(draggableId, destination.droppableId);
+    }
+  };
+
   // Add Comment
   const handleAddComment = async (e) => {
     e.preventDefault();
@@ -211,8 +232,15 @@ function Dashboard({ token, handleLogout }) {
     { title: 'Resolved', status: 'Resolved', color: 'emerald-500', bg: 'glass-panel', border: 'border-emerald-500/20' }
   ];
 
-  const renderTicketCard = (ticket) => (
-    <div key={ticket._id} className="group glass-card p-6 rounded-2xl hover:border-indigo-400/50 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:-translate-y-1 transition-all duration-300 relative flex flex-col h-full mb-4">
+  const renderTicketCard = (ticket, provided) => (
+    <div
+      key={ticket._id}
+      ref={provided?.innerRef}
+      {...provided?.draggableProps}
+      {...provided?.dragHandleProps}
+      style={{ ...provided?.draggableProps.style }}
+      className="group glass-card p-6 rounded-2xl hover:border-indigo-400/50 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] relative flex flex-col h-full bg-slate-900/90 mb-4"
+    >
 
       {/* Top Banner (Priority & Date) */}
       <div className="flex justify-between items-start mb-4">
@@ -322,10 +350,11 @@ function Dashboard({ token, handleLogout }) {
                 <p className="text-slate-400 font-medium text-sm md:text-lg tracking-wide uppercase text-[10px] tracking-widest mt-1">Professional Issue Management</p>
               </div>
 
-              {/* Mobile Sidebar Toggle Button */}
+              {/* Sidebar Toggle Button */}
               <button
-                className="md:hidden p-2 rounded-xl bg-slate-800/50 border border-slate-700 text-slate-300 hover:bg-slate-800 transition-colors"
+                className={`${isSidebarOpen ? 'hidden' : 'block'} p-2 rounded-xl bg-slate-800/50 border border-slate-700 text-slate-300 hover:bg-slate-800 transition-colors`}
                 onClick={() => setIsSidebarOpen(true)}
+                title="Open Sidebar"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -334,6 +363,23 @@ function Dashboard({ token, handleLogout }) {
             </div>
             {decodedToken?.user?.teamId && (
               <div className="mt-6 md:mt-0 flex items-center gap-4">
+
+                {/* Theme Toggle Button */}
+                <button
+                  onClick={toggleTheme}
+                  className="p-3 bg-slate-800/50 border border-slate-700 rounded-2xl text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition-colors relative"
+                  title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                >
+                  {theme === 'dark' ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                    </svg>
+                  )}
+                </button>
 
                 {/* Notification Bell */}
                 <div className="relative">
@@ -492,39 +538,54 @@ function Dashboard({ token, handleLogout }) {
               </div>
 
               {/* Trello Board Grid */}
-              <div className="flex flex-col xl:flex-row gap-6 overflow-x-auto pb-6 custom-scrollbar items-start min-h-[500px]">
+              <DragDropContext onDragEnd={onDragEnd}>
+                <div className="flex flex-col xl:flex-row gap-6 overflow-x-auto pb-6 custom-scrollbar items-start min-h-[500px]">
 
-                {columns.map(col => {
-                  const colTickets = filteredTickets.filter(t => t.status === col.status);
+                  {columns.map(col => {
+                    const colTickets = filteredTickets.filter(t => t.status === col.status);
 
-                  return (
-                    <div key={col.status} className={`flex-1 min-w-[320px] rounded-[2rem] border ${col.border} ${col.bg} p-4 flex flex-col shadow-inner`}>
-                      {/* Column Header */}
-                      <div className="flex justify-between items-center mb-6 px-2 pt-2">
-                        <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
-                          <span className={`w-3 h-3 rounded-full bg-${col.color}`}></span>
-                          {col.title}
-                        </h2>
-                        <span className="bg-white text-slate-500 shadow-sm border border-slate-200 text-xs px-2.5 py-1 rounded-full font-bold">
-                          {colTickets.length}
-                        </span>
-                      </div>
+                    return (
+                      <Droppable key={col.status} droppableId={col.status}>
+                        {(provided, snapshot) => (
+                          <div
+                            className={`flex-1 min-w-[320px] rounded-[2rem] border ${col.border} ${col.bg} p-4 flex flex-col shadow-inner max-h-[70vh] ${snapshot.isDraggingOver ? 'bg-indigo-500/10' : ''}`}
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                          >
+                            {/* Column Header */}
+                            <div className="flex justify-between items-center mb-6 px-2 pt-2 shrink-0">
+                              <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <span className={`w-3 h-3 rounded-full bg-${col.color}`}></span>
+                                {col.title}
+                              </h2>
+                              <span className="bg-white text-slate-500 shadow-sm border border-slate-200 text-xs px-2.5 py-1 rounded-full font-bold">
+                                {colTickets.length}
+                              </span>
+                            </div>
 
-                      {/* Column Cards Container */}
-                      <div className="flex-1 flex flex-col gap-3">
-                        {colTickets.length === 0 ? (
-                          <div className="flex-1 border-2 border-dashed border-slate-300 rounded-2xl flex items-center justify-center min-h-[150px] opacity-50">
-                            <span className="text-slate-400 font-bold text-sm">Drop here</span>
+                            {/* Column Cards Container */}
+                            <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 flex flex-col gap-3 min-h-0">
+                              {colTickets.length === 0 && !snapshot.isDraggingOver ? (
+                                <div className="flex-1 border-2 border-dashed border-slate-300 rounded-2xl flex items-center justify-center min-h-[150px] opacity-50">
+                                  <span className="text-slate-400 font-bold text-sm">Drop here</span>
+                                </div>
+                              ) : (
+                                colTickets.map((ticket, index) => (
+                                  <Draggable key={ticket._id} draggableId={ticket._id} index={index}>
+                                    {(provided) => renderTicketCard(ticket, provided)}
+                                  </Draggable>
+                                ))
+                              )}
+                              {provided.placeholder}
+                            </div>
                           </div>
-                        ) : (
-                          colTickets.map(ticket => renderTicketCard(ticket))
                         )}
-                      </div>
-                    </div>
-                  );
-                })}
+                      </Droppable>
+                    );
+                  })}
 
-              </div>
+                </div>
+              </DragDropContext>
             </>
           )}
 
