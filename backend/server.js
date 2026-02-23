@@ -6,6 +6,9 @@ require('dotenv').config();
 const path = require('path');
 const Ticket = require('./models/Ticket');
 
+const authRoutes = require('./routes/authRoute');
+const authMiddleware = require('./middleware/authMiddleware');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -15,36 +18,66 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('🔥 MongoDB Connected Successfully'))
     .catch(err => console.log('❌ MongoDB Connection Error: ', err));
 
-// API لجلب كل التذاكر
-app.get('/api/tickets', async (req, res) => {
-    const tickets = await Ticket.find().sort({ createdAt: -1 });
-    res.json(tickets);
+// Auth Routes
+app.use('/api/auth', authRoutes);
+
+// API لجلب كل التذاكر الخاصة بالمستخدم
+app.get('/api/tickets', authMiddleware, async (req, res) => {
+    try {
+        const tickets = await Ticket.find({ user: req.user.id }).sort({ createdAt: -1 });
+        res.json(tickets);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch tickets' });
+    }
 });
 
 // API لإضافة تذكرة جديدة
-app.post('/api/tickets', async (req, res) => {
-    const newTicket = new Ticket(req.body);
-    await newTicket.save();
-    res.status(201).json(newTicket);
+app.post('/api/tickets', authMiddleware, async (req, res) => {
+    try {
+        const newTicket = new Ticket({
+            ...req.body,
+            user: req.user.id // Attach the logged in user's ID
+        });
+        await newTicket.save();
+        res.status(201).json(newTicket);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to create ticket' });
+    }
 });
 
 // API لتحديث حالة التذكرة
-app.put('/api/tickets/:id', async (req, res) => {
+app.put('/api/tickets/:id', authMiddleware, async (req, res) => {
     try {
-        const updatedTicket = await Ticket.findByIdAndUpdate(
+        // Ensure the ticket belongs to the user
+        let ticket = await Ticket.findById(req.params.id);
+        if (!ticket) return res.status(404).json({ message: 'Ticket not found' });
+
+        if (ticket.user.toString() !== req.user.id) {
+            return res.status(401).json({ message: 'User not authorized to update this ticket' });
+        }
+
+        ticket = await Ticket.findByIdAndUpdate(
             req.params.id,
             { status: req.body.status },
             { new: true }
         );
-        res.json(updatedTicket);
+        res.json(ticket);
     } catch (err) {
         res.status(500).json({ error: 'Failed to update ticket' });
     }
 });
 
 // API لحذف تذكرة
-app.delete('/api/tickets/:id', async (req, res) => {
+app.delete('/api/tickets/:id', authMiddleware, async (req, res) => {
     try {
+        // Ensure the ticket belongs to the user
+        let ticket = await Ticket.findById(req.params.id);
+        if (!ticket) return res.status(404).json({ message: 'Ticket not found' });
+
+        if (ticket.user.toString() !== req.user.id) {
+            return res.status(401).json({ message: 'User not authorized to delete this ticket' });
+        }
+
         await Ticket.findByIdAndDelete(req.params.id);
         res.json({ message: 'Ticket deleted successfully' });
     } catch (err) {
