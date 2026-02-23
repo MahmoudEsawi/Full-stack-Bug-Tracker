@@ -49,4 +49,36 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 });
 
+// Delete a project
+router.delete('/:id', authMiddleware, async (req, res) => {
+    try {
+        if (!req.user.teamId) {
+            return res.status(403).json({ message: 'User does not belong to a team.' });
+        }
+
+        const project = await Project.findById(req.params.id);
+
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+
+        // Ensure user belongs to the project's team
+        if (project.team.toString() !== req.user.teamId) {
+            return res.status(401).json({ message: 'Not authorized to delete this project' });
+        }
+
+        // Option: Delete all tickets associated with this project first
+        const Ticket = require('../models/Ticket');
+        await Ticket.deleteMany({ project: project._id });
+
+        // Delete the project
+        await project.deleteOne();
+
+        res.json({ message: 'Project and all associated tickets removed successfully' });
+    } catch (err) {
+        console.error('Error deleting project:', err.message);
+        res.status(500).json({ message: err.message || 'Server Error' });
+    }
+});
+
 module.exports = router;

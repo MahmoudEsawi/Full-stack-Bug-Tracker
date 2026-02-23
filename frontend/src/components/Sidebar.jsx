@@ -106,6 +106,26 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
         }
     };
 
+    const handleDeleteProject = async (e, projectId, projectName) => {
+        e.stopPropagation(); // Prevent selecting the project when clicking delete
+        if (!window.confirm(`Are you sure you want to delete the project '${projectName}' and ALL its tickets? This cannot be undone.`)) return;
+
+        setLoading(true);
+        try {
+            await axios.delete(`/api/projects/${projectId}`, authConfig);
+            // If the deleted project was selected, reset the selection
+            if (selectedProjectId === projectId) {
+                setSelectedProjectId(null);
+            }
+            await fetchProjects();
+        } catch (error) {
+            console.error(error);
+            alert(error.response?.data?.message || "Failed to delete project.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <>
             {/* Mobile Overlay Background - Only shown when Sidebar is open on small screens */}
@@ -216,7 +236,7 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
                                             <span className="theme-bg theme-border border text-xs px-2 py-0.5 rounded-full font-bold theme-muted">{projects?.length || 0}</span>
                                         </div>
 
-                                        <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2 mb-4">
+                                        <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 mb-4 min-h-0 space-y-2">
                                             {projects?.length === 0 ? (
                                                 <p className="text-xs theme-muted font-medium">No projects found. Create one below.</p>
                                             ) : (
@@ -224,14 +244,25 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
                                                     <div
                                                         key={project._id}
                                                         onClick={() => setSelectedProjectId(project._id)}
-                                                        className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 group ${selectedProjectId === project._id ? 'bg-indigo-500/20 border border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.15)] translate-x-1' : 'theme-panel theme-border border hover:border-indigo-500/30 hover:bg-indigo-500/5'}`}
+                                                        className={`flex items-center justify-between gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 group ${selectedProjectId === project._id ? 'bg-indigo-500/20 border border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.15)] translate-x-1' : 'theme-panel theme-border border hover:border-indigo-500/30 hover:bg-indigo-500/5'}`}
                                                     >
-                                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shadow-sm transition-colors ${selectedProjectId === project._id ? 'bg-indigo-500 text-white' : 'theme-bg theme-border border theme-muted group-hover:border-indigo-500/50 group-hover:text-indigo-400'}`}>
-                                                            {project.name.substring(0, 2).toUpperCase()}
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-3 overflow-hidden flex-1">
+                                                            <div className={`w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold shadow-sm transition-colors ${selectedProjectId === project._id ? 'bg-indigo-500 text-white' : 'theme-bg theme-border border theme-muted group-hover:border-indigo-500/50 group-hover:text-indigo-400'}`}>
+                                                                {project.name.substring(0, 2).toUpperCase()}
+                                                            </div>
                                                             <p className={`text-sm font-bold truncate transition-colors ${selectedProjectId === project._id ? 'text-indigo-500' : 'theme-text group-hover:text-indigo-400'}`}>{project.name}</p>
                                                         </div>
+
+                                                        {/* Delete Project Button (Only visible on hover or if selected, and if Admin or Creator) */}
+                                                        {(user.role === 'Admin' || project.createdBy === user.id) && (
+                                                            <button
+                                                                onClick={(e) => handleDeleteProject(e, project._id, project.name)}
+                                                                className={`p-1.5 rounded-lg shrink-0 transition-all ${selectedProjectId === project._id ? 'text-red-400 hover:bg-red-500/20 hover:text-red-500' : 'text-transparent hover:bg-red-500/10 hover:text-red-500 group-hover:text-red-400/50'}`}
+                                                                title="Delete Project"
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 ))
                                             )}

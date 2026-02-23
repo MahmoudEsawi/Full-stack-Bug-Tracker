@@ -337,8 +337,21 @@ function Dashboard({ token, handleLogout }) {
         setSelectedProjectId={setSelectedProjectId}
       />
 
-      <main className="flex-1 p-4 md:p-8 h-screen overflow-y-auto relative z-10 custom-scrollbar">
+      <main className={`flex-1 p-4 md:p-8 h-screen overflow-y-auto relative z-10 custom-scrollbar transition-all duration-400 ${!isSidebarOpen ? 'md:pl-20' : ''}`}>
         <div className="w-full max-w-7xl mx-auto">
+
+          {/* Permanent Sidebar Toggle (Visible when sidebar is closed) */}
+          {!isSidebarOpen && (
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="fixed top-8 left-6 z-40 p-3 rounded-2xl theme-panel theme-border border shadow-lg theme-muted hover:text-indigo-500 hover:border-indigo-500/30 transition-all group"
+              title="Open Workspace Portal"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 group-hover:scale-110 transition-transform">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+            </button>
+          )}
 
           {/* Header Section */}
           <header className="mb-10 flex flex-col md:flex-row justify-between md:items-center glass-panel p-6 md:p-8 rounded-[2rem] shadow-2xl shadow-black/20 gap-6">
@@ -349,17 +362,6 @@ function Dashboard({ token, handleLogout }) {
                 </h1>
                 <p className="theme-muted font-medium text-sm md:text-lg tracking-wide uppercase text-[10px] tracking-widest mt-1">Professional Issue Management</p>
               </div>
-
-              {/* Sidebar Toggle Button */}
-              <button
-                className="block p-2 rounded-xl theme-panel theme-muted theme-hover transition-colors"
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                title={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                </svg>
-              </button>
             </div>
             {decodedToken?.user?.teamId && (
               <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
