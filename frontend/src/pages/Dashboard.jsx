@@ -157,80 +157,80 @@ function Dashboard({ token, handleLogout }) {
 
   // Kanban Columns Data Structure
   const columns = [
-    { title: 'Open', status: 'Open', color: 'blue-500', bg: 'bg-blue-50', border: 'border-blue-200' },
-    { title: 'In Progress', status: 'In Progress', color: 'amber-500', bg: 'bg-amber-50', border: 'border-amber-200' },
-    { title: 'Resolved', status: 'Resolved', color: 'emerald-500', bg: 'bg-emerald-50', border: 'border-emerald-200' }
+    { title: 'Open', status: 'Open', color: 'indigo-500', bg: 'glass-panel', border: 'border-indigo-500/20' },
+    { title: 'In Progress', status: 'In Progress', color: 'fuchsia-500', bg: 'glass-panel', border: 'border-fuchsia-500/20' },
+    { title: 'Resolved', status: 'Resolved', color: 'emerald-500', bg: 'glass-panel', border: 'border-emerald-500/20' }
   ];
 
   const renderTicketCard = (ticket) => (
-    <div key={ticket._id} className="group bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:shadow-slate-500/5 hover:-translate-y-1 transition-all duration-300 relative flex flex-col h-full mb-4">
+    <div key={ticket._id} className="group glass-card p-6 rounded-2xl hover:border-indigo-400/50 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:-translate-y-1 transition-all duration-300 relative flex flex-col h-full mb-4">
 
       {/* Top Banner (Priority & Date) */}
-      <div className="flex justify-between items-start mb-3">
-        <span className={`shrink-0 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1.5 ${ticket.priority === 'High' ? 'bg-red-50 text-red-700 border border-red-100' :
-          ticket.priority === 'Medium' ? 'bg-amber-50 text-amber-700 border border-amber-100' :
-            'bg-blue-50 text-blue-700 border border-blue-100'
+      <div className="flex justify-between items-start mb-4">
+        <span className={`shrink-0 px-2.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1.5 ${ticket.priority === 'High' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
+          ticket.priority === 'Medium' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+            'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
           }`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${ticket.priority === 'High' ? 'bg-red-500' : ticket.priority === 'Medium' ? 'bg-amber-500' : 'bg-blue-500'}`}></span>
+          <span className={`w-1.5 h-1.5 rounded-full ${ticket.priority === 'High' ? 'bg-red-500 shadow-[0_0_8px_#ef4444]' : ticket.priority === 'Medium' ? 'bg-amber-500 shadow-[0_0_8px_#f59e0b]' : 'bg-indigo-500 shadow-[0_0_8px_#6366f1]'}`}></span>
           {ticket.priority}
         </span>
-        <span className="text-[10px] font-bold text-slate-400">
+        <span className="text-[10px] font-bold text-slate-500">
           {ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString() : ''}
         </span>
       </div>
 
-      <h3 className={`text-lg font-bold mb-2 ${ticket.status === 'Resolved' ? 'text-slate-500 line-through decoration-slate-300' : 'text-slate-800'}`}>
+      <h3 className={`text-[17px] font-bold mb-3 ${ticket.status === 'Resolved' ? 'text-slate-500 line-through decoration-slate-600' : 'text-slate-200'}`}>
         {ticket.title}
       </h3>
 
-      <p className={`text-sm text-slate-600 mb-6 leading-relaxed font-medium flex-1 ${ticket.status === 'Resolved' ? 'opacity-60' : ''}`}>
+      <p className={`text-[13px] text-slate-400 mb-6 leading-relaxed font-medium flex-1 ${ticket.status === 'Resolved' ? 'opacity-50' : ''}`}>
         {ticket.description}
       </p>
 
       {/* Ticket History Metadata */}
-      <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 mb-4 space-y-2">
+      <div className="bg-slate-900/50 p-3 rounded-xl border border-slate-700/50 mb-4 space-y-2">
         <div className="flex justify-between items-center text-xs">
-          <span className="text-slate-400 font-medium">Opened by:</span>
-          <span className="font-bold text-slate-700">{ticket.user?.username || 'Unknown'}</span>
+          <span className="text-slate-500 font-medium">Opened by:</span>
+          <span className="font-bold text-slate-300">{ticket.user?.username || 'Unknown'}</span>
         </div>
 
         {ticket.status === 'Resolved' && ticket.closedBy && (
-          <div className="flex justify-between items-center text-xs pt-2 border-t border-slate-200/60 mt-2">
+          <div className="flex justify-between items-center text-xs pt-2 border-t border-slate-700/50 mt-2">
             <span className="text-emerald-500 font-medium">Closed by:</span>
-            <span className="font-bold text-emerald-700">{ticket.closedBy?.username}</span>
+            <span className="font-bold text-emerald-400">{ticket.closedBy?.username}</span>
           </div>
         )}
 
         <button
           onClick={() => setSelectedTicket(ticket)}
-          className="w-full mt-2 py-1.5 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors flex items-center justify-center gap-1.5"
+          className="w-full mt-3 py-2 text-xs font-bold text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20 hover:text-indigo-300 border border-indigo-500/20 rounded-lg transition-colors flex items-center justify-center gap-1.5"
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          View Full History
+          View Full Details
         </button>
       </div>
 
       {/* Kanban Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-2 mt-auto pt-4 border-t border-slate-100">
-        <div className="flex gap-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 mt-auto pt-4 border-t border-slate-800">
+        <div className="flex gap-2">
           {ticket.status !== 'Open' && (
-            <button onClick={() => handleUpdateStatus(ticket._id, 'Open')} className="text-slate-500 hover:text-blue-600 hover:bg-blue-50 p-1.5 rounded-lg transition-colors" title="Move to Open">
+            <button onClick={() => handleUpdateStatus(ticket._id, 'Open')} className="text-slate-500 hover:text-indigo-400 hover:bg-slate-800 p-2 rounded-xl transition-colors" title="Move to Open">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
             </button>
           )}
           {ticket.status === 'Open' && (
-            <button onClick={() => handleUpdateStatus(ticket._id, 'In Progress')} className="text-slate-500 hover:text-amber-600 hover:bg-amber-50 p-1.5 rounded-lg transition-colors" title="Move to In Progress">
+            <button onClick={() => handleUpdateStatus(ticket._id, 'In Progress')} className="text-slate-500 hover:text-fuchsia-400 hover:bg-slate-800 p-2 rounded-xl transition-colors" title="Move to In Progress">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
             </button>
           )}
           {ticket.status === 'In Progress' && (
-            <button onClick={() => handleUpdateStatus(ticket._id, 'Resolved')} className="text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 p-1.5 rounded-lg transition-colors" title="Resolve Issue">
+            <button onClick={() => handleUpdateStatus(ticket._id, 'Resolved')} className="text-slate-500 hover:text-emerald-400 hover:bg-slate-800 p-2 rounded-xl transition-colors" title="Resolve Issue">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
             </button>
           )}
         </div>
 
-        <button onClick={() => handleDelete(ticket._id)} className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-colors ml-auto" title="Delete Ticket">
+        <button onClick={() => handleDelete(ticket._id)} className="text-slate-500 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 p-2 rounded-xl transition-colors ml-auto" title="Delete Ticket">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
         </button>
       </div>
@@ -238,7 +238,11 @@ function Dashboard({ token, handleLogout }) {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#050511] font-sans text-slate-200 flex flex-col md:flex-row relative overflow-hidden">
+      {/* Background Ambient Glows */}
+      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-[20%] right-[-10%] w-[400px] h-[400px] bg-fuchsia-600/10 blur-[100px] rounded-full pointer-events-none"></div>
+
       <Sidebar
         token={token}
         handleLogout={handleLogout}
@@ -250,22 +254,22 @@ function Dashboard({ token, handleLogout }) {
         }}
       />
 
-      <main className="flex-1 p-4 md:p-8 h-screen overflow-y-auto">
-        <div className="w-full max-w-6xl mx-auto">
+      <main className="flex-1 p-4 md:p-8 h-screen overflow-y-auto relative z-10 custom-scrollbar">
+        <div className="w-full max-w-7xl mx-auto">
 
           {/* Header Section */}
-          <header className="mb-10 flex flex-col md:flex-row justify-between items-center bg-white p-6 md:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
+          <header className="mb-10 flex flex-col md:flex-row justify-between items-center glass-panel p-6 md:p-8 rounded-[2rem] shadow-2xl shadow-black/20">
             <div className="w-full md:w-auto flex justify-between items-center mb-6 md:mb-0">
               <div>
-                <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-2 md:mb-3">
-                  <span className="text-blue-600">Nexus</span> Tracker
+                <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-2 md:mb-3">
+                  <span className="text-indigo-500 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-fuchsia-500">Nexus</span> Tracker
                 </h1>
-                <p className="text-slate-500 font-medium text-sm md:text-lg tracking-wide">Professional Bug & Issue Management</p>
+                <p className="text-slate-400 font-medium text-sm md:text-lg tracking-wide uppercase text-[10px] tracking-widest mt-1">Professional Issue Management</p>
               </div>
 
               {/* Mobile Sidebar Toggle Button */}
               <button
-                className="md:hidden p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors"
+                className="md:hidden p-2 rounded-xl bg-slate-800/50 border border-slate-700 text-slate-300 hover:bg-slate-800 transition-colors"
                 onClick={() => setIsSidebarOpen(true)}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
@@ -280,40 +284,40 @@ function Dashboard({ token, handleLogout }) {
                 <div className="relative">
                   <button
                     onClick={() => setShowNotifications(!showNotifications)}
-                    className="p-3 bg-slate-50 border border-slate-100 rounded-2xl text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-colors relative"
+                    className="p-3 bg-slate-800/50 border border-slate-700 rounded-2xl text-slate-400 hover:text-indigo-400 hover:bg-slate-800 transition-colors relative"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                     </svg>
                     {unreadCount > 0 && (
                       <span className="absolute top-2 right-2 flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-fuchsia-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-fuchsia-500 border-2 border-[#131C31]"></span>
                       </span>
                     )}
                   </button>
 
                   {/* Notifications Dropdown */}
                   {showNotifications && (
-                    <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 animate-[scale-in_0.2s_ease-out] origin-top-right">
-                      <div className="bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center">
-                        <h4 className="font-bold text-slate-800">Notifications</h4>
-                        {unreadCount > 0 && <span className="bg-blue-100 text-blue-700 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">{unreadCount} New</span>}
+                    <div className="absolute right-0 mt-3 w-80 glass-panel rounded-2xl shadow-2xl overflow-hidden z-50 animate-[scale-in_0.2s_ease-out] origin-top-right">
+                      <div className="bg-slate-900/50 p-4 border-b border-slate-700 flex justify-between items-center">
+                        <h4 className="font-bold text-slate-200">Notifications</h4>
+                        {unreadCount > 0 && <span className="bg-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-indigo-500/30">{unreadCount} New</span>}
                       </div>
                       <div className="max-h-80 overflow-y-auto custom-scrollbar">
                         {notifications.length === 0 ? (
-                          <div className="p-6 text-center text-slate-400 text-sm font-medium">No inner peace is better than an empty inbox. 🍃</div>
+                          <div className="p-6 text-center text-slate-500 text-sm font-medium">No inner peace is better than an empty inbox. 🍃</div>
                         ) : (
                           notifications.map(note => (
                             <div
                               key={note._id}
                               onClick={() => handleMarkNotificationRead(note._id, note.relatedTicket?._id)}
-                              className={`p-4 border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors ${!note.isRead ? 'bg-blue-50/30' : 'opacity-60'}`}
+                              className={`p-4 border-b border-slate-800/50 hover:bg-slate-800/50 cursor-pointer transition-colors ${!note.isRead ? 'bg-indigo-500/10' : 'opacity-60'}`}
                             >
-                              <p className={`text-sm ${!note.isRead ? 'font-bold text-slate-800' : 'font-medium text-slate-600'}`}>
+                              <p className={`text-sm ${!note.isRead ? 'font-bold text-slate-200' : 'font-medium text-slate-400'}`}>
                                 {note.message}
                               </p>
-                              <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-wider">
+                              <p className="text-[10px] font-bold text-slate-500 mt-2 uppercase tracking-wider">
                                 {format(new Date(note.createdAt), 'MMM d, h:mm a')}
                               </p>
                             </div>
@@ -324,13 +328,13 @@ function Dashboard({ token, handleLogout }) {
                   )}
                 </div>
 
-                <div className="bg-slate-50 px-6 py-4 rounded-2xl border border-slate-100 shadow-sm hidden sm:block">
+                <div className="bg-slate-800/50 px-6 py-4 rounded-2xl border border-slate-700 shadow-sm hidden sm:block">
                   <span className="block text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Total Issues</span>
-                  <span className="text-2xl font-black text-slate-800">{tickets.length}</span>
+                  <span className="text-2xl font-black text-white">{tickets.length}</span>
                 </div>
-                <div className="bg-emerald-50 px-6 py-4 rounded-2xl border border-emerald-100 shadow-sm hidden md:block">
-                  <span className="block text-xs text-emerald-600 uppercase font-bold tracking-wider mb-1">Resolved</span>
-                  <span className="text-2xl font-black text-emerald-700">{resolvedCount}</span>
+                <div className="bg-emerald-500/10 px-6 py-4 rounded-2xl border border-emerald-500/20 shadow-sm hidden md:block">
+                  <span className="block text-xs text-emerald-500 uppercase font-bold tracking-wider mb-1">Resolved</span>
+                  <span className="text-2xl font-black text-emerald-400">{resolvedCount}</span>
                 </div>
               </div>
             )}
@@ -338,12 +342,13 @@ function Dashboard({ token, handleLogout }) {
 
           {/* State: No Team */}
           {!decodedToken?.user?.teamId ? (
-            <div className="bg-white p-16 rounded-[2rem] border border-slate-200 shadow-sm text-center">
-              <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-4xl">🏢</span>
+            <div className="glass-panel p-16 rounded-[2rem] shadow-2xl shadow-black/20 text-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-32 bg-indigo-500/10 blur-[100px] rounded-full"></div>
+              <div className="w-24 h-24 bg-indigo-500/10 border border-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-6 relative z-10 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
+                <span className="text-4xl text-indigo-400">❖</span>
               </div>
-              <h2 className="text-2xl font-black text-slate-800 mb-4">Welcome to Nexus Tracker</h2>
-              <p className="text-slate-500 font-medium max-w-lg mx-auto leading-relaxed">
+              <h2 className="text-3xl font-black text-white mb-4 relative z-10">Welcome to <span className="text-indigo-400">Nexus</span></h2>
+              <p className="text-slate-400 font-medium max-w-lg mx-auto leading-relaxed relative z-10">
                 To get started, please create a new workspace or join an existing one using the options in the sidebar.
               </p>
             </div>
@@ -352,24 +357,24 @@ function Dashboard({ token, handleLogout }) {
 
               {/* --- Dashboard / Charts Section --- */}
               {tickets.length > 0 && (
-                <div className="mb-10 bg-white border border-slate-100 p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col md:flex-row items-center gap-10">
+                <div className="mb-10 glass-panel p-8 rounded-[2rem] shadow-2xl shadow-black/20 flex flex-col md:flex-row items-center gap-10">
                   <div className="w-full md:w-1/2">
-                    <h2 className="text-2xl font-bold mb-4 text-slate-800 flex items-center gap-3">
-                      <span className="bg-blue-600 w-2 h-8 rounded-full"></span> System Health
+                    <h2 className="text-2xl font-bold mb-4 text-white flex items-center gap-3">
+                      <span className="bg-indigo-500 shadow-[0_0_10px_#6366f1] w-2 h-8 rounded-full"></span> System Health
                     </h2>
-                    <p className="text-slate-600 leading-relaxed mb-6 text-lg">
-                      Track your bug resolution rate in real-time. Currently, you have <strong className="text-slate-900">{openCount}</strong> active issues out of <strong className="text-slate-900">{tickets.length}</strong> total reported bugs.
+                    <p className="text-slate-400 leading-relaxed mb-6 text-lg">
+                      Track your bug resolution rate in real-time. Currently, you have <strong className="text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">{openCount}</strong> active issues out of <strong className="text-slate-200">{tickets.length}</strong> total reported bugs.
                     </p>
 
                     {/* Progress Bar */}
-                    <div className="w-full bg-slate-100 rounded-full h-3 relative overflow-hidden shadow-inner">
+                    <div className="w-full bg-slate-800/80 rounded-full h-3 relative overflow-hidden shadow-inner border border-slate-700/50">
                       <div
-                        className="bg-gradient-to-r from-emerald-400 to-emerald-500 h-3 rounded-full transition-all duration-1000"
+                        className="bg-gradient-to-r from-emerald-400 to-emerald-500 shadow-[0_0_10px_#10b981] h-3 rounded-full transition-all duration-1000"
                         style={{ width: `${(resolvedCount / (tickets.length || 1)) * 100}%` }}
                       ></div>
                     </div>
-                    <p className="text-right text-sm mt-3 text-slate-500 font-bold">
-                      {Math.round((resolvedCount / (tickets.length || 1)) * 100)}% Resolved
+                    <p className="text-right text-sm mt-3 text-slate-400 font-bold">
+                      <span className="text-emerald-400">{Math.round((resolvedCount / (tickets.length || 1)) * 100)}%</span> Resolved
                     </p>
                   </div>
 
@@ -391,10 +396,10 @@ function Dashboard({ token, handleLogout }) {
                           ))}
                         </Pie>
                         <Tooltip
-                          contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #f1f5f9', borderRadius: '12px', color: '#1e293b', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                          itemStyle={{ color: '#1e293b', fontWeight: 'bold' }}
+                          contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '12px', color: '#f8fafc', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.5)' }}
+                          itemStyle={{ color: '#f8fafc', fontWeight: 'bold' }}
                         />
-                        <Legend verticalAlign="bottom" height={36} wrapperStyle={{ color: '#64748b', fontWeight: '600' }} />
+                        <Legend verticalAlign="bottom" height={36} wrapperStyle={{ color: '#94a3b8', fontWeight: '600' }} />
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
@@ -402,24 +407,24 @@ function Dashboard({ token, handleLogout }) {
               )}
 
               {/* Report New Ticket Bar */}
-              <div className="mb-8">
-                <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex flex-col md:flex-row gap-4 items-end">
+              <div className="mb-8 relative z-20">
+                <form onSubmit={handleSubmit} className="glass-panel p-6 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-4 items-end">
                   <div className="w-full md:w-1/3">
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Issue Title</label>
-                    <input type="text" placeholder="e.g. Broken links..." required className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 font-medium text-sm" value={newTicket.title} onChange={e => setNewTicket({ ...newTicket, title: e.target.value })} />
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Issue Title</label>
+                    <input type="text" placeholder="e.g. Broken links..." required className="w-full p-3 bg-slate-900/50 border border-slate-700 text-white placeholder-slate-500 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium text-sm transition-all" value={newTicket.title} onChange={e => setNewTicket({ ...newTicket, title: e.target.value })} />
                   </div>
                   <div className="w-full md:w-1/3">
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Context</label>
-                    <input type="text" placeholder="Short description..." required className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 font-medium text-sm" value={newTicket.description} onChange={e => setNewTicket({ ...newTicket, description: e.target.value })} />
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Context</label>
+                    <input type="text" placeholder="Short description..." required className="w-full p-3 bg-slate-900/50 border border-slate-700 text-white placeholder-slate-500 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium text-sm transition-all" value={newTicket.description} onChange={e => setNewTicket({ ...newTicket, description: e.target.value })} />
                   </div>
                   <div className="w-full md:w-1/6">
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Priority</label>
-                    <select className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 font-bold text-sm" value={newTicket.priority} onChange={e => setNewTicket({ ...newTicket, priority: e.target.value })}>
-                      <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Priority</label>
+                    <select className="w-full p-3 bg-slate-900/50 border border-slate-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 font-bold text-sm transition-all appearance-none" value={newTicket.priority} onChange={e => setNewTicket({ ...newTicket, priority: e.target.value })}>
+                      <option className="bg-slate-900" value="Low">Low</option><option className="bg-slate-900" value="Medium">Medium</option><option className="bg-slate-900" value="High">High</option>
                     </select>
                   </div>
-                  <button type="submit" className="w-full md:w-auto bg-blue-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-blue-600/30 hover:bg-blue-500 hover:-translate-y-0.5 transition-all text-sm h-[46px]">
-                    + Add
+                  <button type="submit" className="w-full md:w-auto bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] hover:bg-indigo-500 hover:-translate-y-0.5 transition-all text-sm h-[46px] flex items-center justify-center gap-2">
+                    <span className="text-lg leading-none">+</span> Add Issue
                   </button>
                 </form>
               </div>
@@ -462,66 +467,66 @@ function Dashboard({ token, handleLogout }) {
           )}
 
           {/* Footer */}
-          <footer className="mt-16 text-center text-slate-400 text-sm font-medium pb-8">
+          <footer className="mt-16 text-center text-slate-500 text-sm font-medium pb-8 relative z-20">
             <p className="flex items-center justify-center gap-2">
-              Built with <span className="text-red-500 text-lg">❤️</span> by <a href="https://github.com/MahmoudEsawi" target="_blank" rel="noreferrer" className="text-blue-500 hover:text-blue-600 font-bold hover:underline transition-colors">Mahmoud Esawi</a>
+              Built with <span className="text-red-500 text-lg drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]">❤️</span> by <a href="https://github.com/MahmoudEsawi" target="_blank" rel="noreferrer" className="text-indigo-400 hover:text-indigo-300 font-bold hover:underline transition-colors">Mahmoud Esawi</a>
             </p>
           </footer>
 
           {/* Ticket Details & Comments Modal */}
           {selectedTicket && (
-            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 md:p-8">
-              <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 md:p-8">
+              <div className="glass-panel border-slate-700/50 rounded-[2rem] shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
 
                 {/* Modal Header */}
-                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 shrink-0">
-                  <h3 className="text-xl font-black text-slate-800 flex items-center gap-3">
-                    <span className="bg-blue-600 p-2 rounded-xl text-white shadow-sm">
+                <div className="p-6 border-b border-slate-700/50 flex justify-between items-center bg-slate-900/50 shrink-0">
+                  <h3 className="text-xl font-black text-white flex items-center gap-3">
+                    <span className="bg-indigo-500/20 border border-indigo-500/30 p-2 rounded-xl text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </span>
                     Ticket Details: {selectedTicket.title}
                   </h3>
-                  <button onClick={() => setSelectedTicket(null)} className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-xl transition-colors">
+                  <button onClick={() => setSelectedTicket(null)} className="text-slate-400 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-xl transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
 
                 {/* Modal Body - 2 Columns */}
-                <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
+                <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0 relative">
 
                   {/* Left Column: Timeline & Meta */}
-                  <div className="w-full md:w-1/3 border-r border-slate-100 bg-slate-50/30 p-6 md:p-8 overflow-y-auto custom-scrollbar">
+                  <div className="w-full md:w-1/3 border-r border-slate-800/60 bg-slate-900/30 p-6 md:p-8 overflow-y-auto custom-scrollbar">
                     <div className="mb-8">
                       <h4 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Description</h4>
-                      <p className="text-slate-700 font-medium leading-relaxed bg-white p-4 rounded-2xl border border-slate-100">{selectedTicket.description}</p>
+                      <p className="text-slate-300 font-medium leading-relaxed bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">{selectedTicket.description}</p>
                     </div>
 
                     <h4 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-6">Activity Timeline</h4>
-                    <div className="relative pl-6 border-l-2 border-slate-200 space-y-8">
+                    <div className="relative pl-6 border-l-2 border-slate-700/50 space-y-8">
                       {/* Creation Event */}
                       <div className="relative">
-                        <div className="absolute -left-[35px] bg-white p-1 rounded-full border-2 border-slate-200">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <div className="absolute -left-[35px] bg-[#050511] p-1 rounded-full border-2 border-slate-600">
+                          <div className="w-3 h-3 bg-indigo-500 shadow-[0_0_8px_#6366f1] rounded-full"></div>
                         </div>
                         <p className="text-xs font-bold text-slate-500 mb-1">
                           {selectedTicket.createdAt ? format(new Date(selectedTicket.createdAt), 'MMM d, h:mm a') : 'Unknown Date'}
                         </p>
-                        <p className="text-sm font-medium text-slate-800 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                          Opened by <strong className="text-blue-600">{selectedTicket.user?.username || 'Unknown'}</strong>.
+                        <p className="text-sm font-medium text-slate-300 bg-slate-800/40 p-4 rounded-xl border border-slate-700/50 shadow-sm">
+                          Opened by <strong className="text-indigo-400">{selectedTicket.user?.username || 'Unknown'}</strong>.
                         </p>
                       </div>
 
                       {/* Closing Event */}
                       {selectedTicket.status === 'Resolved' && (
                         <div className="relative">
-                          <div className="absolute -left-[35px] bg-white p-1 rounded-full border-2 border-emerald-200">
+                          <div className="absolute -left-[35px] bg-[#050511] p-1 rounded-full border-2 border-emerald-500/30">
                             <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_#10b981]"></div>
                           </div>
-                          <p className="text-xs font-bold text-emerald-600 mb-1">
+                          <p className="text-xs font-bold text-emerald-500 mb-1">
                             {selectedTicket.closedAt ? format(new Date(selectedTicket.closedAt), 'MMM d, h:mm a') : 'Unknown Date'}
                           </p>
-                          <p className="text-sm font-medium text-slate-800 bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100 shadow-sm">
-                            Resolved by <strong className="text-emerald-600">{selectedTicket.closedBy?.username || 'Unknown'}</strong>.
+                          <p className="text-sm font-medium text-slate-300 bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20 shadow-sm">
+                            Resolved by <strong className="text-emerald-400">{selectedTicket.closedBy?.username || 'Unknown'}</strong>.
                           </p>
                         </div>
                       )}
@@ -529,14 +534,14 @@ function Dashboard({ token, handleLogout }) {
                   </div>
 
                   {/* Right Column: Comments Thread */}
-                  <div className="w-full md:w-2/3 flex flex-col bg-white overflow-hidden min-h-[400px]">
+                  <div className="w-full md:w-2/3 flex flex-col bg-transparent overflow-hidden min-h-[400px]">
                     <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar space-y-6 flex flex-col">
                       {(!selectedTicket.comments || selectedTicket.comments.length === 0) ? (
-                        <div className="flex-1 flex flex-col items-center justify-center text-slate-400 opacity-60 m-auto">
+                        <div className="flex-1 flex flex-col items-center justify-center text-slate-500 opacity-60 m-auto">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 mb-4">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
                           </svg>
-                          <p className="font-bold">No comments yet.</p>
+                          <p className="font-bold text-white">No comments yet.</p>
                           <p className="text-sm">Start the conversation below.</p>
                         </div>
                       ) : (
@@ -547,7 +552,7 @@ function Dashboard({ token, handleLogout }) {
                               <span className="text-[11px] font-bold text-slate-400 mb-1 px-1">
                                 {isMe ? 'You' : comment.user?.username} • {format(new Date(comment.createdAt), 'h:mm a')}
                               </span>
-                              <div className={`px-5 py-3 rounded-2xl shadow-sm text-sm font-medium leading-relaxed ${isMe ? 'bg-blue-600 text-white rounded-tr-sm' : 'bg-slate-100 text-slate-800 rounded-tl-sm border border-slate-200'}`}>
+                              <div className={`px-5 py-3 rounded-2xl shadow-sm text-sm font-medium leading-relaxed ${isMe ? 'bg-indigo-600 text-white rounded-tr-sm' : 'bg-slate-800/80 text-slate-200 rounded-tl-sm border border-slate-700/50'}`}>
                                 {comment.text}
                               </div>
                             </div>
@@ -557,19 +562,19 @@ function Dashboard({ token, handleLogout }) {
                     </div>
 
                     {/* Chat Input Area */}
-                    <div className="p-4 md:p-6 border-t border-slate-100 bg-slate-50 shrink-0">
+                    <div className="p-4 md:p-6 border-t border-slate-800/60 bg-slate-900/50 shrink-0">
                       <form onSubmit={handleAddComment} className="flex gap-3">
                         <input
                           type="text"
                           placeholder="Type your message..."
-                          className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-sm shadow-sm"
+                          className="flex-1 bg-slate-900 border border-slate-700 text-white placeholder-slate-500 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-sm transition-all"
                           value={newComment}
                           onChange={(e) => setNewComment(e.target.value)}
                         />
                         <button
                           type="submit"
                           disabled={!newComment.trim()}
-                          className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl px-6 font-bold shadow-md transition-all flex items-center justify-center"
+                          className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white rounded-xl px-6 font-bold shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all flex items-center justify-center"
                         >
                           Send
                         </button>
@@ -584,44 +589,44 @@ function Dashboard({ token, handleLogout }) {
 
           {/* Profile Modal */}
           {showProfileModal && (
-            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-              <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-[scale-in_0.2s_ease-out]">
-                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                  <h3 className="text-xl font-black text-slate-800 flex items-center gap-3">
-                    <span className="bg-blue-600 p-2 rounded-xl text-white shadow-sm">
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+              <div className="glass-panel border-slate-700/50 rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-[scale-in_0.2s_ease-out]">
+                <div className="p-6 border-b border-slate-700/50 flex justify-between items-center bg-slate-900/50">
+                  <h3 className="text-xl font-black text-white flex items-center gap-3">
+                    <span className="bg-fuchsia-500/20 border border-fuchsia-500/30 p-2 rounded-xl text-fuchsia-400 shadow-[0_0_15px_rgba(217,70,239,0.2)]">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
                     </span>
                     Profile Settings
                   </h3>
-                  <button onClick={() => setShowProfileModal(false)} className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-xl transition-colors">
+                  <button onClick={() => setShowProfileModal(false)} className="text-slate-400 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-xl transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
 
-                <form onSubmit={handleUpdateProfile} className="p-8 space-y-5">
+                <form onSubmit={handleUpdateProfile} className="p-8 space-y-5 bg-transparent">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Username</label>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Username</label>
                     <input
                       type="text"
-                      className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 font-medium text-sm"
+                      className="w-full p-4 bg-slate-900 border border-slate-700 text-white rounded-xl focus:ring-2 focus:ring-fuchsia-500 font-medium text-sm transition-all"
                       value={profileData.username}
                       onChange={e => setProfileData({ ...profileData, username: e.target.value })}
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">New Password</label>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">New Password</label>
                     <input
                       type="password"
                       placeholder="Leave blank to keep current password"
-                      className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 font-medium text-sm"
+                      className="w-full p-4 bg-slate-900 border border-slate-700 text-white placeholder-slate-600 rounded-xl focus:ring-2 focus:ring-fuchsia-500 font-medium text-sm transition-all"
                       value={profileData.password}
                       onChange={e => setProfileData({ ...profileData, password: e.target.value })}
                     />
                   </div>
 
                   <div className="pt-4">
-                    <button type="submit" className="w-full bg-blue-600 text-white font-bold px-6 py-4 rounded-xl shadow-lg shadow-blue-600/30 hover:bg-blue-500 hover:-translate-y-0.5 transition-all text-sm">
+                    <button type="submit" className="w-full bg-fuchsia-600 text-white font-bold px-6 py-4 rounded-xl shadow-[0_0_20px_rgba(217,70,239,0.4)] hover:shadow-[0_0_30px_rgba(217,70,239,0.6)] hover:bg-fuchsia-500 hover:-translate-y-0.5 transition-all text-sm">
                       Save Changes
                     </button>
                   </div>
