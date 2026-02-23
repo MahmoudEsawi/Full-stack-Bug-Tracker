@@ -14,17 +14,32 @@ function Dashboard({ token, handleLogout }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
 
+  // Phase 4 States
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileData, setProfileData] = useState({ username: '', password: '' });
+
   // Extract User info from Token
   const decodedToken = jwtDecode(token);
+
+  // Set initial username for profile form
+  useEffect(() => {
+    if (decodedToken?.user?.username) {
+      setProfileData(prev => ({ ...prev, username: decodedToken.user.username }));
+    }
+  }, [decodedToken?.user?.username]);
 
   // Setup Axios Auth Header
   const authConfig = {
     headers: { Authorization: `Bearer ${token}` }
   };
 
-  // Fetch tickets on mount
+  // Fetch tickets & notifications on mount
   useEffect(() => {
     fetchTickets();
+    fetchNotifications();
   }, []);
 
   const fetchTickets = async () => {
@@ -33,6 +48,31 @@ function Dashboard({ token, handleLogout }) {
       setTickets(res.data);
     } catch (error) {
       console.error("Error fetching tickets:", error);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await axios.get('/api/notifications', authConfig);
+      setNotifications(res.data);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  const handleMarkNotificationRead = async (id, relatedTicketId) => {
+    try {
+      await axios.put(`/api/notifications/${id}/read`, {}, authConfig);
+      fetchNotifications();
+
+      // If there's a related ticket, open it automatically
+      setShowNotifications(false);
+      if (relatedTicketId) {
+        const ticketToOpen = tickets.find(t => t._id === relatedTicketId);
+        if (ticketToOpen) setSelectedTicket(ticketToOpen);
+      }
+    } catch (error) {
+      console.error("Error marking notification read:", error);
     }
   };
 
@@ -68,6 +108,34 @@ function Dashboard({ token, handleLogout }) {
     }
   };
 
+  // Add Comment
+  const handleAddComment = async (e) => {
+    e.preventDefault();
+    if (!newComment.trim() || !selectedTicket) return;
+    try {
+      const res = await axios.post(`${API_URL}/${selectedTicket._id}/comments`, { text: newComment }, authConfig);
+      setSelectedTicket(res.data); // Update modal view
+      setNewComment('');
+      fetchTickets(); // Update background board
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
+  };
+
+  // Update Profile
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put('/api/auth/profile', profileData, authConfig);
+      alert('Profile updated successfully! If you changed your password, you may need to re-login.');
+      setShowProfileModal(false);
+      setProfileData({ ...profileData, password: '' }); // Clear password field
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert('Failed to update profile.');
+    }
+  };
+
   // Filter tickets based on search query
   const filteredTickets = tickets.filter(ticket =>
     ticket.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -82,6 +150,8 @@ function Dashboard({ token, handleLogout }) {
     { name: 'Active Bugs', value: openCount },
     { name: 'Resolved', value: resolvedCount },
   ];
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const COLORS = ['#ef4444', '#22c55e']; // Red for active, Green for resolved
 
@@ -174,6 +244,10 @@ function Dashboard({ token, handleLogout }) {
         handleLogout={handleLogout}
         isOpen={isSidebarOpen}
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        onOpenProfile={() => {
+          setIsSidebarOpen(false);
+          setShowProfileModal(true);
+        }}
       />
 
       <main className="flex-1 p-4 md:p-8 h-screen overflow-y-auto">
@@ -201,13 +275,62 @@ function Dashboard({ token, handleLogout }) {
             </div>
             {decodedToken?.user?.teamId && (
               <div className="mt-6 md:mt-0 flex items-center gap-4">
-                <div className="bg-slate-50 px-6 py-4 rounded-2xl border border-slate-100 shadow-sm">
-                  <span className="block text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Total Issues</span>
-                  <span className="text-3xl font-black text-slate-800">{tickets.length}</span>
+
+                {/* Notification Bell */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowNotifications(!showNotifications)}
+                    className="p-3 bg-slate-50 border border-slate-100 rounded-2xl text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-colors relative"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                    </svg>
+                    {unreadCount > 0 && (
+                      <span className="absolute top-2 right-2 flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Notifications Dropdown */}
+                  {showNotifications && (
+                    <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 animate-[scale-in_0.2s_ease-out] origin-top-right">
+                      <div className="bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center">
+                        <h4 className="font-bold text-slate-800">Notifications</h4>
+                        {unreadCount > 0 && <span className="bg-blue-100 text-blue-700 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">{unreadCount} New</span>}
+                      </div>
+                      <div className="max-h-80 overflow-y-auto custom-scrollbar">
+                        {notifications.length === 0 ? (
+                          <div className="p-6 text-center text-slate-400 text-sm font-medium">No inner peace is better than an empty inbox. 🍃</div>
+                        ) : (
+                          notifications.map(note => (
+                            <div
+                              key={note._id}
+                              onClick={() => handleMarkNotificationRead(note._id, note.relatedTicket?._id)}
+                              className={`p-4 border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors ${!note.isRead ? 'bg-blue-50/30' : 'opacity-60'}`}
+                            >
+                              <p className={`text-sm ${!note.isRead ? 'font-bold text-slate-800' : 'font-medium text-slate-600'}`}>
+                                {note.message}
+                              </p>
+                              <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-wider">
+                                {format(new Date(note.createdAt), 'MMM d, h:mm a')}
+                              </p>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="bg-emerald-50 px-6 py-4 rounded-2xl border border-emerald-100 shadow-sm hidden sm:block">
+
+                <div className="bg-slate-50 px-6 py-4 rounded-2xl border border-slate-100 shadow-sm hidden sm:block">
+                  <span className="block text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Total Issues</span>
+                  <span className="text-2xl font-black text-slate-800">{tickets.length}</span>
+                </div>
+                <div className="bg-emerald-50 px-6 py-4 rounded-2xl border border-emerald-100 shadow-sm hidden md:block">
                   <span className="block text-xs text-emerald-600 uppercase font-bold tracking-wider mb-1">Resolved</span>
-                  <span className="text-3xl font-black text-emerald-700">{resolvedCount}</span>
+                  <span className="text-2xl font-black text-emerald-700">{resolvedCount}</span>
                 </div>
               </div>
             )}
@@ -345,74 +468,164 @@ function Dashboard({ token, handleLogout }) {
             </p>
           </footer>
 
-          {/* Ticket History Modal */}
+          {/* Ticket Details & Comments Modal */}
           {selectedTicket && (
-            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-              <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden animate-[scale-in_0.2s_ease-out]">
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 md:p-8">
+              <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
 
                 {/* Modal Header */}
-                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 shrink-0">
                   <h3 className="text-xl font-black text-slate-800 flex items-center gap-3">
                     <span className="bg-blue-600 p-2 rounded-xl text-white shadow-sm">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </span>
-                    Ticket History
+                    Ticket Details: {selectedTicket.title}
                   </h3>
                   <button onClick={() => setSelectedTicket(null)} className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-xl transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
 
-                {/* Modal Content - Timeline */}
-                <div className="p-8">
-                  <div className="mb-8">
-                    <h4 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Issue</h4>
-                    <p className="text-lg font-bold text-slate-800">{selectedTicket.title}</p>
-                  </div>
+                {/* Modal Body - 2 Columns */}
+                <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
 
-                  <div className="relative pl-6 border-l-2 border-slate-200 space-y-8">
-                    {/* Creation Event */}
-                    <div className="relative">
-                      <div className="absolute -left-[35px] bg-white p-1 rounded-full border-2 border-slate-200">
-                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      </div>
-                      <p className="text-xs font-bold text-slate-500 mb-1">
-                        {selectedTicket.createdAt ? format(new Date(selectedTicket.createdAt), 'MMM d, yyyy - h:mm a') : 'Unknown Date'}
-                      </p>
-                      <p className="text-sm font-medium text-slate-800 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                        Ticket opened by <strong className="text-blue-600">{selectedTicket.user?.username || 'Unknown'}</strong>.
-                        <br /><span className="text-slate-500 text-xs mt-1 block">Status set to Open.</span>
-                      </p>
+                  {/* Left Column: Timeline & Meta */}
+                  <div className="w-full md:w-1/3 border-r border-slate-100 bg-slate-50/30 p-6 md:p-8 overflow-y-auto custom-scrollbar">
+                    <div className="mb-8">
+                      <h4 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Description</h4>
+                      <p className="text-slate-700 font-medium leading-relaxed bg-white p-4 rounded-2xl border border-slate-100">{selectedTicket.description}</p>
                     </div>
 
-                    {/* Closing Event */}
-                    {selectedTicket.status === 'Resolved' ? (
-                      <div className="relative">
-                        <div className="absolute -left-[35px] bg-white p-1 rounded-full border-2 border-emerald-200">
-                          <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_#10b981]"></div>
-                        </div>
-                        <p className="text-xs font-bold text-emerald-600 mb-1">
-                          {selectedTicket.closedAt ? format(new Date(selectedTicket.closedAt), 'MMM d, yyyy - h:mm a') : 'Unknown Date'}
-                        </p>
-                        <p className="text-sm font-medium text-slate-800 bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100">
-                          Issue resolved by <strong className="text-emerald-600">{selectedTicket.closedBy?.username || 'Unknown'}</strong>.
-                        </p>
-                      </div>
-                    ) : (
+                    <h4 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-6">Activity Timeline</h4>
+                    <div className="relative pl-6 border-l-2 border-slate-200 space-y-8">
+                      {/* Creation Event */}
                       <div className="relative">
                         <div className="absolute -left-[35px] bg-white p-1 rounded-full border-2 border-slate-200">
-                          <div className="w-3 h-3 bg-slate-300 rounded-full"></div>
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                         </div>
-                        <p className="text-sm font-bold text-slate-400 italic">Work in progress...</p>
+                        <p className="text-xs font-bold text-slate-500 mb-1">
+                          {selectedTicket.createdAt ? format(new Date(selectedTicket.createdAt), 'MMM d, h:mm a') : 'Unknown Date'}
+                        </p>
+                        <p className="text-sm font-medium text-slate-800 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                          Opened by <strong className="text-blue-600">{selectedTicket.user?.username || 'Unknown'}</strong>.
+                        </p>
                       </div>
-                    )}
+
+                      {/* Closing Event */}
+                      {selectedTicket.status === 'Resolved' && (
+                        <div className="relative">
+                          <div className="absolute -left-[35px] bg-white p-1 rounded-full border-2 border-emerald-200">
+                            <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_#10b981]"></div>
+                          </div>
+                          <p className="text-xs font-bold text-emerald-600 mb-1">
+                            {selectedTicket.closedAt ? format(new Date(selectedTicket.closedAt), 'MMM d, h:mm a') : 'Unknown Date'}
+                          </p>
+                          <p className="text-sm font-medium text-slate-800 bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100 shadow-sm">
+                            Resolved by <strong className="text-emerald-600">{selectedTicket.closedBy?.username || 'Unknown'}</strong>.
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Right Column: Comments Thread */}
+                  <div className="w-full md:w-2/3 flex flex-col bg-white overflow-hidden min-h-[400px]">
+                    <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar space-y-6 flex flex-col">
+                      {(!selectedTicket.comments || selectedTicket.comments.length === 0) ? (
+                        <div className="flex-1 flex flex-col items-center justify-center text-slate-400 opacity-60 m-auto">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 mb-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+                          </svg>
+                          <p className="font-bold">No comments yet.</p>
+                          <p className="text-sm">Start the conversation below.</p>
+                        </div>
+                      ) : (
+                        selectedTicket.comments.map((comment, idx) => {
+                          const isMe = comment.user?._id === decodedToken?.user?.id;
+                          return (
+                            <div key={idx} className={`flex flex-col max-w-[85%] ${isMe ? 'self-end items-end' : 'self-start items-start'}`}>
+                              <span className="text-[11px] font-bold text-slate-400 mb-1 px-1">
+                                {isMe ? 'You' : comment.user?.username} • {format(new Date(comment.createdAt), 'h:mm a')}
+                              </span>
+                              <div className={`px-5 py-3 rounded-2xl shadow-sm text-sm font-medium leading-relaxed ${isMe ? 'bg-blue-600 text-white rounded-tr-sm' : 'bg-slate-100 text-slate-800 rounded-tl-sm border border-slate-200'}`}>
+                                {comment.text}
+                              </div>
+                            </div>
+                          )
+                        })
+                      )}
+                    </div>
+
+                    {/* Chat Input Area */}
+                    <div className="p-4 md:p-6 border-t border-slate-100 bg-slate-50 shrink-0">
+                      <form onSubmit={handleAddComment} className="flex gap-3">
+                        <input
+                          type="text"
+                          placeholder="Type your message..."
+                          className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-sm shadow-sm"
+                          value={newComment}
+                          onChange={(e) => setNewComment(e.target.value)}
+                        />
+                        <button
+                          type="submit"
+                          disabled={!newComment.trim()}
+                          className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl px-6 font-bold shadow-md transition-all flex items-center justify-center"
+                        >
+                          Send
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Profile Modal */}
+          {showProfileModal && (
+            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-[scale-in_0.2s_ease-out]">
+                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                  <h3 className="text-xl font-black text-slate-800 flex items-center gap-3">
+                    <span className="bg-blue-600 p-2 rounded-xl text-white shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                    </span>
+                    Profile Settings
+                  </h3>
+                  <button onClick={() => setShowProfileModal(false)} className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-xl transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
                 </div>
 
-                <div className="p-4 bg-slate-50 border-t border-slate-100 text-center">
-                  <button onClick={() => setSelectedTicket(null)} className="text-sm font-bold text-slate-600 hover:text-slate-800 px-6 py-2">Close</button>
-                </div>
+                <form onSubmit={handleUpdateProfile} className="p-8 space-y-5">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Username</label>
+                    <input
+                      type="text"
+                      className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 font-medium text-sm"
+                      value={profileData.username}
+                      onChange={e => setProfileData({ ...profileData, username: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">New Password</label>
+                    <input
+                      type="password"
+                      placeholder="Leave blank to keep current password"
+                      className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 font-medium text-sm"
+                      value={profileData.password}
+                      onChange={e => setProfileData({ ...profileData, password: e.target.value })}
+                    />
+                  </div>
 
+                  <div className="pt-4">
+                    <button type="submit" className="w-full bg-blue-600 text-white font-bold px-6 py-4 rounded-xl shadow-lg shadow-blue-600/30 hover:bg-blue-500 hover:-translate-y-0.5 transition-all text-sm">
+                      Save Changes
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           )}

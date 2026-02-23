@@ -34,6 +34,13 @@ const ticketSchema = new mongoose.Schema({
         ref: 'User',
         default: null
     },
+    comments: [
+        {
+            user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            text: { type: String, required: true },
+            createdAt: { type: Date, default: Date.now }
+        }
+    ],
     closedAt: {
         type: Date,
         default: null

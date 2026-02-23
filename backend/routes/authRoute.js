@@ -222,4 +222,30 @@ router.get('/team', authMiddleware, async (req, res) => {
     }
 });
 
+// @route   PUT /api/auth/profile
+// @desc    Update user profile (username, password)
+router.put('/profile', authMiddleware, async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        let user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        if (username) user.username = username;
+
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+        }
+
+        await user.save();
+
+        res.json({ message: 'Profile updated successfully', user: { id: user.id, username: user.username, role: user.role } });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;
