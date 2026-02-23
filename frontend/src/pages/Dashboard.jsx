@@ -239,42 +239,42 @@ function Dashboard({ token, handleLogout }) {
       {...provided?.draggableProps}
       {...provided?.dragHandleProps}
       style={{ ...provided?.draggableProps.style }}
-      className="group glass-card p-6 rounded-2xl hover:border-indigo-400/50 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] relative flex flex-col h-full bg-slate-900/90 mb-4"
+      className="group p-6 rounded-2xl theme-glass theme-border border hover:border-indigo-400/50 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] relative flex flex-col h-full mb-4"
     >
 
       {/* Top Banner (Priority & Date) */}
       <div className="flex justify-between items-start mb-4">
-        <span className={`shrink-0 px-2.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1.5 ${ticket.priority === 'High' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-          ticket.priority === 'Medium' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-            'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+        <span className={`shrink-0 px-2.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1.5 ${ticket.priority === 'High' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
+          ticket.priority === 'Medium' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
+            'bg-indigo-500/10 text-indigo-500 border border-indigo-500/20'
           }`}>
           <span className={`w-1.5 h-1.5 rounded-full ${ticket.priority === 'High' ? 'bg-red-500 shadow-[0_0_8px_#ef4444]' : ticket.priority === 'Medium' ? 'bg-amber-500 shadow-[0_0_8px_#f59e0b]' : 'bg-indigo-500 shadow-[0_0_8px_#6366f1]'}`}></span>
           {ticket.priority}
         </span>
-        <span className="text-[10px] font-bold text-slate-500">
+        <span className="text-[10px] font-bold theme-muted">
           {ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString() : ''}
         </span>
       </div>
 
-      <h3 className={`text-[17px] font-bold mb-3 ${ticket.status === 'Resolved' ? 'text-slate-500 line-through decoration-slate-600' : 'text-slate-200'}`}>
+      <h3 className={`text-[17px] font-bold mb-3 ${ticket.status === 'Resolved' ? 'theme-muted line-through opacity-75' : 'theme-text'}`}>
         {ticket.title}
       </h3>
 
-      <p className={`text-[13px] text-slate-400 mb-6 leading-relaxed font-medium flex-1 ${ticket.status === 'Resolved' ? 'opacity-50' : ''}`}>
+      <p className={`text-[13px] theme-muted mb-6 leading-relaxed font-medium flex-1 ${ticket.status === 'Resolved' ? 'opacity-50' : ''}`}>
         {ticket.description}
       </p>
 
       {/* Ticket History Metadata */}
-      <div className="bg-slate-900/50 p-3 rounded-xl border border-slate-700/50 mb-4 space-y-2">
+      <div className="theme-panel p-3 rounded-xl border mb-4 space-y-2">
         <div className="flex justify-between items-center text-xs">
-          <span className="text-slate-500 font-medium">Opened by:</span>
-          <span className="font-bold text-slate-300">{ticket.user?.username || 'Unknown'}</span>
+          <span className="theme-muted font-medium">Opened by:</span>
+          <span className="font-bold theme-text">{ticket.user?.username || 'Unknown'}</span>
         </div>
 
         {ticket.status === 'Resolved' && ticket.closedBy && (
-          <div className="flex justify-between items-center text-xs pt-2 border-t border-slate-700/50 mt-2">
+          <div className="flex justify-between items-center text-xs pt-2 border-t theme-border mt-2">
             <span className="text-emerald-500 font-medium">Closed by:</span>
-            <span className="font-bold text-emerald-400">{ticket.closedBy?.username}</span>
+            <span className="font-bold text-emerald-500">{ticket.closedBy?.username}</span>
           </div>
         )}
 
@@ -288,26 +288,26 @@ function Dashboard({ token, handleLogout }) {
       </div>
 
       {/* Kanban Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-2 mt-auto pt-4 border-t border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-2 mt-auto pt-4 border-t theme-border">
         <div className="flex gap-2">
           {ticket.status !== 'Open' && (
-            <button onClick={() => handleUpdateStatus(ticket._id, 'Open')} className="text-slate-500 hover:text-indigo-400 hover:bg-slate-800 p-2 rounded-xl transition-colors" title="Move to Open">
+            <button onClick={() => handleUpdateStatus(ticket._id, 'Open')} className="theme-muted hover:text-indigo-500 hover:theme-panel theme-border border border-transparent hover:border-indigo-500/20 p-2 rounded-xl transition-colors" title="Move to Open">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
             </button>
           )}
           {ticket.status === 'Open' && (
-            <button onClick={() => handleUpdateStatus(ticket._id, 'In Progress')} className="text-slate-500 hover:text-fuchsia-400 hover:bg-slate-800 p-2 rounded-xl transition-colors" title="Move to In Progress">
+            <button onClick={() => handleUpdateStatus(ticket._id, 'In Progress')} className="theme-muted hover:text-fuchsia-500 hover:theme-panel border border-transparent hover:border-fuchsia-500/20 p-2 rounded-xl transition-colors" title="Move to In Progress">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
             </button>
           )}
           {ticket.status === 'In Progress' && (
-            <button onClick={() => handleUpdateStatus(ticket._id, 'Resolved')} className="text-slate-500 hover:text-emerald-400 hover:bg-slate-800 p-2 rounded-xl transition-colors" title="Resolve Issue">
+            <button onClick={() => handleUpdateStatus(ticket._id, 'Resolved')} className="theme-muted hover:text-emerald-500 hover:theme-panel border border-transparent hover:border-emerald-500/20 p-2 rounded-xl transition-colors" title="Resolve Issue">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
             </button>
           )}
         </div>
 
-        <button onClick={() => handleDelete(ticket._id)} className="text-slate-500 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 p-2 rounded-xl transition-colors ml-auto" title="Delete Ticket">
+        <button onClick={() => handleDelete(ticket._id)} className="theme-muted hover:text-red-500 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 p-2 rounded-xl transition-colors ml-auto" title="Delete Ticket">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
         </button>
       </div>
@@ -460,22 +460,22 @@ function Dashboard({ token, handleLogout }) {
               {tickets.length > 0 && (
                 <div className="mb-10 glass-panel p-8 rounded-[2rem] shadow-2xl shadow-black/20 flex flex-col md:flex-row items-center gap-10">
                   <div className="w-full md:w-1/2">
-                    <h2 className="text-2xl font-bold mb-4 text-white flex items-center gap-3">
+                    <h2 className="text-2xl font-bold mb-4 theme-text flex items-center gap-3">
                       <span className="bg-indigo-500 shadow-[0_0_10px_#6366f1] w-2 h-8 rounded-full"></span> System Health
                     </h2>
-                    <p className="text-slate-400 leading-relaxed mb-6 text-lg">
-                      Track your bug resolution rate in real-time. Currently, you have <strong className="text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">{openCount}</strong> active issues out of <strong className="text-slate-200">{tickets.length}</strong> total reported bugs.
+                    <p className="theme-muted leading-relaxed mb-6 text-lg">
+                      Track your bug resolution rate in real-time. Currently, you have <strong className="text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">{openCount}</strong> active issues out of <strong className="theme-text">{tickets.length}</strong> total reported bugs.
                     </p>
 
                     {/* Progress Bar */}
-                    <div className="w-full bg-slate-800/80 rounded-full h-3 relative overflow-hidden shadow-inner border border-slate-700/50">
+                    <div className="w-full theme-input rounded-full h-3 relative overflow-hidden shadow-inner border theme-border">
                       <div
                         className="bg-gradient-to-r from-emerald-400 to-emerald-500 shadow-[0_0_10px_#10b981] h-3 rounded-full transition-all duration-1000"
                         style={{ width: `${(resolvedCount / (tickets.length || 1)) * 100}%` }}
                       ></div>
                     </div>
-                    <p className="text-right text-sm mt-3 text-slate-400 font-bold">
-                      <span className="text-emerald-400">{Math.round((resolvedCount / (tickets.length || 1)) * 100)}%</span> Resolved
+                    <p className="text-right text-sm mt-3 theme-muted font-bold">
+                      <span className="text-emerald-500">{Math.round((resolvedCount / (tickets.length || 1)) * 100)}%</span> Resolved
                     </p>
                   </div>
 
@@ -641,7 +641,7 @@ function Dashboard({ token, handleLogout }) {
                       {/* Closing Event */}
                       {selectedTicket.status === 'Resolved' && (
                         <div className="relative">
-                          <div className="absolute -left-[35px] bg-[#050511] p-1 rounded-full border-2 border-emerald-500/30">
+                          <div className="absolute -left-[35px] theme-input p-1 rounded-full border-2 border-emerald-500/30">
                             <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_#10b981]"></div>
                           </div>
                           <p className="text-xs font-bold text-emerald-500 mb-1">

@@ -6,25 +6,69 @@
 
 @layer base {
   :root {
-    --bg-app: #030308;
-    --bg-panel: rgba(17, 25, 40, 0.5);
-    --bg-input: #0b0f19;
-    --bg-hover: rgba(30, 41, 59, 0.8);
-    --border-dim: rgba(255, 255, 255, 0.08);
-    --text-main: #f8fafc;
+    /* DARK MODE DEFAULT */
+    --bg-app: #020617;
+    /* Very deep slate/blue for true obsidian feel */
+    --bg-panel: rgba(15, 23, 42, 0.7);
+    /* Translucent slate-900 */
+    --bg-glass: rgba(30, 41, 59, 0.4);
+    /* Slate-800 for cards */
+    --bg-input: #0f172a;
+    /* Slate 900 Solid */
+    --bg-hover: rgba(51, 65, 85, 0.5);
+    /* Slate 700 */
+
+    --border-main: rgba(51, 65, 85, 0.5);
+    /* Slate 700 */
+    --border-dim: rgba(255, 255, 255, 0.05);
+
+    --text-heading: #f8fafc;
+    /* Slate 50 */
+    --text-main: #e2e8f0;
+    /* Slate 200 */
     --text-muted: #94a3b8;
-    --shadow-glow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    /* Slate 400 */
+
+    --shadow-glow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+    --ambient-glow-1: rgba(99, 102, 241, 0.15);
+    /* Indigo */
+    --ambient-glow-2: rgba(217, 70, 239, 0.15);
+    /* Fuchsia */
   }
 
   body.light {
-    --bg-app: #f4f7f6;
-    --bg-panel: rgba(255, 255, 255, 0.85);
+    /* LIGHT MODE OVERRIDES */
+    --bg-app: #f1f5f9;
+    /* Soft slate 100 */
+    --bg-panel: rgba(255, 255, 255, 0.9);
+    /* Opaque white glass */
+    --bg-glass: rgba(255, 255, 255, 0.6);
+    /* Translucent white */
     --bg-input: #ffffff;
-    --bg-hover: rgba(241, 245, 249, 1);
-    --border-dim: rgba(0, 0, 0, 0.08);
-    --text-main: #0f172a;
+    --bg-hover: rgba(226, 232, 240, 0.8);
+    /* Slate 200 */
+
+    --border-main: rgba(203, 213, 225, 0.8);
+    /* Slate 300 */
+    --border-dim: rgba(0, 0, 0, 0.05);
+    /* Very subtle dark border */
+
+    --text-heading: #0f172a;
+    /* Slate 900 */
+    --text-main: #334155;
+    /* Slate 700 */
     --text-muted: #64748b;
-    --shadow-glow: 0 10px 40px rgba(0, 0, 0, 0.03);
+    /* Slate 500 */
+
+    --shadow-glow: 0 10px 40px rgba(0, 0, 0, 0.06);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+    --ambient-glow-1: rgba(99, 102, 241, 0.08);
+    /* Lighter Indigo */
+    --ambient-glow-2: rgba(217, 70, 239, 0.08);
+    /* Lighter Fuchsia */
   }
 }
 
@@ -106,14 +150,17 @@ body {
   background: var(--bg-panel);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border-dim);
+  border: 1px solid var(--border-main);
   box-shadow: var(--shadow-glow);
   transition: all 0.3s ease;
 }
 
 .glass-card {
-  background: var(--bg-input);
-  border: 1px solid var(--border-dim);
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-main);
+  box-shadow: var(--shadow-sm);
   transition: all 0.3s ease;
 }
 
@@ -124,12 +171,17 @@ body {
 
 .theme-panel {
   background-color: var(--bg-panel);
-  border-color: var(--border-dim);
+  border-color: var(--border-main);
+}
+
+.theme-glass {
+  background-color: var(--bg-glass);
+  border-color: var(--border-main);
 }
 
 .theme-input {
   background-color: var(--bg-input);
-  border-color: var(--border-dim);
+  border-color: var(--border-main);
   color: var(--text-main);
 }
 
@@ -142,7 +194,7 @@ body {
 }
 
 .theme-border {
-  border-color: var(--border-dim);
+  border-color: var(--border-main);
 }
 
 .theme-hover:hover {

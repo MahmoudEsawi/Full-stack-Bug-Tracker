@@ -109,17 +109,17 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
     return (
         <>
             {/* Mobile Overlay Background - Only shown when Sidebar is open on small screens */}
-            {isOpen && window.innerWidth < 768 && (
+            {isOpen && (
                 <div
                     className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 md:hidden transition-opacity duration-300"
                     onClick={toggleSidebar}
                 ></div>
             )}
 
-            <aside className={`fixed md:relative top-0 left-0 theme-panel backdrop-blur-3xl shadow-[4px_0_24px_rgba(0,0,0,0.5)] flex flex-col h-[100dvh] custom-scrollbar theme-text md:rounded-r-[2rem] z-50 transition-all duration-300 ease-in-out shrink-0
+            <aside className={`fixed inset-y-0 left-0 z-50 flex flex-col w-80 h-[100dvh] p-6 theme-panel backdrop-blur-3xl shadow-[4px_0_24px_rgba(0,0,0,0.5)] custom-scrollbar theme-text md:relative transform transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] shrink-0 overflow-y-auto theme-border md:rounded-r-[2rem] 
               ${isOpen
-                    ? 'w-80 p-6 translate-x-0 theme-border border-r opacity-100 overflow-y-auto'
-                    : 'w-80 md:w-0 -translate-x-full md:translate-x-0 p-6 md:p-0 opacity-0 overflow-hidden border-none'
+                    ? 'translate-x-0 border-r opacity-100 md:ml-0'
+                    : '-translate-x-full opacity-0 md:border-none md:-ml-80'
                 }
             `}>
 
