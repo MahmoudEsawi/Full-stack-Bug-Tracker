@@ -12,7 +12,7 @@ function Dashboard({ token, handleLogout }) {
   const [tickets, setTickets] = useState([]);
   const [newTicket, setNewTicket] = useState({ title: '', description: '', priority: 'Low' });
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
   const [selectedTicket, setSelectedTicket] = useState(null);
 
   // Phase 4 States
@@ -315,10 +315,10 @@ function Dashboard({ token, handleLogout }) {
   );
 
   return (
-    <div className="min-h-screen bg-[#050511] font-sans text-slate-200 flex flex-col md:flex-row relative overflow-hidden">
+    <div className="min-h-screen bg-[#050511] font-sans text-slate-200 flex flex-col md:flex-row relative overflow-hidden transition-colors duration-300">
       {/* Background Ambient Glows */}
-      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-[20%] right-[-10%] w-[400px] h-[400px] bg-fuchsia-600/10 blur-[100px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none transition-opacity"></div>
+      <div className="absolute bottom-[20%] right-[-10%] w-[500px] h-[500px] bg-fuchsia-600/5 blur-[100px] rounded-full pointer-events-none transition-opacity"></div>
 
       <Sidebar
         token={token}
@@ -508,31 +508,31 @@ function Dashboard({ token, handleLogout }) {
               )}
 
               {/* Report New Ticket Bar */}
-              <div className="mb-8 relative z-20">
-                <div className="mb-4 flex items-center gap-3 px-2">
-                  <h3 className="text-xl font-black text-white flex items-center gap-2">
-                    <span className="text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]">❖</span>
+              <div className="mb-10 relative z-20">
+                <div className="mb-5 flex items-center gap-3 px-2">
+                  <h3 className="text-xl md:text-2xl font-black text-white flex items-center gap-2">
+                    <span className="text-indigo-500">❖</span>
                     {projects.find(p => p._id === selectedProjectId)?.name || 'Select a Project'}
                   </h3>
-                  <span className="bg-slate-800 border border-slate-700 text-slate-400 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest hidden sm:inline-block">Active Workspace</span>
+                  <span className="bg-slate-800 border border-slate-700 text-slate-400 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest hidden sm:inline-block shadow-[0_4px_10px_rgba(0,0,0,0.3)]">Active Workspace</span>
                 </div>
-                <form onSubmit={handleSubmit} className="glass-panel p-6 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-4 items-end">
-                  <div className="w-full md:w-1/3">
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Issue Title</label>
-                    <input type="text" placeholder="e.g. Broken links..." required className="w-full p-3 bg-slate-900/50 border border-slate-700 text-white placeholder-slate-500 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium text-sm transition-all" value={newTicket.title} onChange={e => setNewTicket({ ...newTicket, title: e.target.value })} />
+                <form onSubmit={handleSubmit} className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 p-6 rounded-2xl shadow-xl flex flex-col lg:flex-row gap-5 items-end">
+                  <div className="w-full lg:flex-1">
+                    <label className="block text-xs font-bold text-slate-400 tracking-wider uppercase mb-2 ml-1">Issue Title</label>
+                    <input type="text" placeholder="e.g. Broken links..." required className="w-full p-3.5 bg-[#050511] border border-slate-700/80 text-white placeholder-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium text-sm transition-all shadow-inner" value={newTicket.title} onChange={e => setNewTicket({ ...newTicket, title: e.target.value })} />
                   </div>
-                  <div className="w-full md:w-1/3">
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Context</label>
-                    <input type="text" placeholder="Short description..." required className="w-full p-3 bg-slate-900/50 border border-slate-700 text-white placeholder-slate-500 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium text-sm transition-all" value={newTicket.description} onChange={e => setNewTicket({ ...newTicket, description: e.target.value })} />
+                  <div className="w-full lg:flex-[1.5]">
+                    <label className="block text-xs font-bold text-slate-400 tracking-wider uppercase mb-2 ml-1">Context</label>
+                    <input type="text" placeholder="Short description..." required className="w-full p-3.5 bg-[#050511] border border-slate-700/80 text-white placeholder-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium text-sm transition-all shadow-inner" value={newTicket.description} onChange={e => setNewTicket({ ...newTicket, description: e.target.value })} />
                   </div>
-                  <div className="w-full md:w-1/6">
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Priority</label>
-                    <select className="w-full p-3 bg-slate-900/50 border border-slate-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 font-bold text-sm transition-all appearance-none" value={newTicket.priority} onChange={e => setNewTicket({ ...newTicket, priority: e.target.value })}>
+                  <div className="w-full lg:w-40 shrink-0">
+                    <label className="block text-xs font-bold text-slate-400 tracking-wider uppercase mb-2 ml-1">Priority</label>
+                    <select className="w-full p-3.5 bg-[#050511] border border-slate-700/80 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 font-bold text-sm transition-all shadow-inner" value={newTicket.priority} onChange={e => setNewTicket({ ...newTicket, priority: e.target.value })}>
                       <option className="bg-slate-900" value="Low">Low</option><option className="bg-slate-900" value="Medium">Medium</option><option className="bg-slate-900" value="High">High</option>
                     </select>
                   </div>
-                  <button type="submit" className="w-full md:w-auto bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] hover:bg-indigo-500 hover:-translate-y-0.5 transition-all text-sm h-[46px] flex items-center justify-center gap-2">
-                    <span className="text-lg leading-none">+</span> Add Issue
+                  <button type="submit" className="w-full lg:w-auto bg-indigo-600/90 text-white font-bold px-8 py-3.5 rounded-xl border border-indigo-500/50 shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:bg-indigo-500 transition-all text-sm shrink-0 whitespace-nowrap">
+                    + Add Issue
                   </button>
                 </form>
               </div>

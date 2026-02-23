@@ -7,6 +7,7 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
     const [joinCode, setJoinCode] = useState('');
     const [projectName, setProjectName] = useState('');
     const [projectDesc, setProjectDesc] = useState('');
+    const [isCreatingProject, setIsCreatingProject] = useState(false);
     const [loading, setLoading] = useState(false);
     const [teamData, setTeamData] = useState(null);
 
@@ -81,6 +82,7 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
             await axios.post('/api/projects', { name: projectName, description: projectDesc }, authConfig);
             setProjectName('');
             setProjectDesc('');
+            setIsCreatingProject(false);
             await fetchProjects();
         } catch (error) {
             console.error(error);
@@ -195,32 +197,47 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
 
                                     <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2 mb-4">
                                         {projects?.length === 0 ? (
-                                            <p className="text-xs text-slate-500 font-medium">No projects found.</p>
+                                            <p className="text-xs text-slate-500 font-medium">No projects found. Create one below.</p>
                                         ) : (
                                             projects.map(project => (
                                                 <div
                                                     key={project._id}
                                                     onClick={() => setSelectedProjectId(project._id)}
-                                                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors group ${selectedProjectId === project._id ? 'bg-indigo-500/20 border border-indigo-500/50' : 'bg-slate-900/40 border border-slate-700/30 hover:bg-slate-800'}`}
+                                                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 group ${selectedProjectId === project._id ? 'bg-indigo-500/20 border border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.15)] translate-x-1' : 'bg-slate-900/40 border border-slate-700/30 hover:bg-slate-800 hover:border-slate-600'}`}
                                                 >
-                                                    <div className="w-8 h-8 rounded-lg bg-[#050511] border border-slate-700 flex items-center justify-center text-xs font-bold text-slate-300 shadow-sm group-hover:border-indigo-500/50 transition-colors">
+                                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shadow-sm transition-colors ${selectedProjectId === project._id ? 'bg-indigo-600 text-white' : 'bg-[#050511] border border-slate-700 text-slate-400 group-hover:border-indigo-500/50 group-hover:text-slate-200'}`}>
                                                         {project.name.substring(0, 2).toUpperCase()}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className={`text-sm font-bold truncate transition-colors ${selectedProjectId === project._id ? 'text-indigo-300' : 'text-slate-200 group-hover:text-white'}`}>{project.name}</p>
-                                                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest truncate">{project.description || 'No description'}</p>
+                                                        <p className={`text-sm font-bold truncate transition-colors ${selectedProjectId === project._id ? 'text-indigo-300' : 'text-slate-300 group-hover:text-white'}`}>{project.name}</p>
                                                     </div>
                                                 </div>
                                             ))
                                         )}
                                     </div>
 
-                                    <form onSubmit={handleCreateProject} className="bg-slate-900/50 border border-slate-700/50 p-3 rounded-xl flex flex-col gap-2 shadow-inner">
-                                        <input type="text" placeholder="Project Name" required className="bg-[#050511] border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all" value={projectName} onChange={e => setProjectName(e.target.value)} />
-                                        <button disabled={loading} className="w-full bg-indigo-600/20 hover:bg-indigo-600 text-indigo-400 hover:text-white border border-indigo-500/30 text-xs font-bold py-2 rounded-lg transition-colors">
-                                            {loading ? 'Creating...' : '+ New Project'}
+                                    {isCreatingProject ? (
+                                        <form onSubmit={handleCreateProject} className="bg-slate-900/80 border border-indigo-500/30 p-3.5 rounded-xl flex flex-col gap-3 shadow-[0_0_20px_rgba(99,102,241,0.1)] transition-all">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">New Project</span>
+                                                <button type="button" onClick={() => setIsCreatingProject(false)} className="text-slate-500 hover:text-red-400">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                </button>
+                                            </div>
+                                            <input type="text" placeholder="Project Name" required autoFocus className="bg-[#050511] border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-slate-600" value={projectName} onChange={e => setProjectName(e.target.value)} />
+                                            <button disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_10px_rgba(99,102,241,0.4)] text-xs font-bold py-2.5 rounded-lg transition-all">
+                                                {loading ? 'Creating...' : 'Create'}
+                                            </button>
+                                        </form>
+                                    ) : (
+                                        <button
+                                            onClick={() => setIsCreatingProject(true)}
+                                            className="w-full bg-slate-800/40 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-700/50 hover:border-slate-600 text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                                            Create Project
                                         </button>
-                                    </form>
+                                    )}
                                 </div>
 
                                 {/* Team Members List */}

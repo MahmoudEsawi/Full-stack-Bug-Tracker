@@ -17,7 +17,7 @@ router.get('/', authMiddleware, async (req, res) => {
         res.json(projects);
     } catch (err) {
         console.error('Error fetching projects:', err.message);
-        res.status(500).send('Server Error');
+        res.status(500).json({ message: err.message || 'Server Error' });
     }
 });
 
@@ -45,7 +45,7 @@ router.post('/', authMiddleware, async (req, res) => {
         res.status(201).json(project);
     } catch (err) {
         console.error('Error creating project:', err.message);
-        res.status(500).send('Server Error');
+        res.status(500).json({ message: err.message || 'Server Error' });
     }
 });
 
