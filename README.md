@@ -17,7 +17,8 @@ _No more lost bug reports. No more emails. Just pure, organized issue management
 
 ## 🔥 Features that actually matter
 
-- 🎯 **Full CRUD Mastery:** Unrestricted ability to Create, Read, Update, and Delete tickets on the fly.
+- 🔒 **Secure User Authentication:** Full JWT-based login and registration system protecting your data.
+- 🎯 **Full CRUD Mastery:** Unrestricted ability to Create, Read, Update, and Delete your tickets safely.
 - ⚡ **Real-time State Magic:** Instant DOM updates without frustrating page reloads, thanks to React's highly optimized state management.
 - 🎨 **Beautiful UI/UX:** A carefully crafted, responsive interface using **Tailwind CSS** that looks gorgeous on both mobile and desktop.
 - 🚦 **Smart Triage:** Automatic visual color coding and categorization based on ticket priority (Low, Medium, High).
@@ -35,6 +36,7 @@ The application is built on the battle-tested **MERN** stack, augmented entirely
 | **Styling** | ![TailwindCSS](https://img.shields.io/badge/-Tailwind_CSS-000000?style=flat&logo=tailwindcss) | Utility-first, zero-bloat CSS for rapid UI development. |
 | **Backend** | ![Node.js](https://img.shields.io/badge/-Node.js-000000?style=flat&logo=nodedotjs) <br> ![Express.js](https://img.shields.io/badge/-Express.js-000000?style=flat&logo=express) | Non-blocking, event-driven architecture perfect for APIs. |
 | **Database** | ![MongoDB](https://img.shields.io/badge/-MongoDB-000000?style=flat&logo=mongodb) <br> ![Mongoose](https://img.shields.io/badge/-Mongoose-000000?style=flat&logo=mongoose) | Flexible NoSQL schema handling for rapid iteration. |
+| **Security** | ![JWT](https://img.shields.io/badge/-JSON_Web_Tokens-000000?style=flat&logo=jsonwebtokens) <br> ![Bcrypt](https://img.shields.io/badge/-Bcrypt.js-000000?style=flat&logo=npm) | Robust stateless authentication and password hashing. |
 
 ---
 
@@ -58,6 +60,7 @@ Create a `.env` file right inside the `backend` folder:
 ```env
 MONGO_URI=your_super_secret_mongodb_cluster_string
 PORT=5001
+JWT_SECRET=your_super_secret_jwt_signature_key
 ```
 Start the engine:
 ```bash
