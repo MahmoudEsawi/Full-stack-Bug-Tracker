@@ -118,23 +118,23 @@ function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, th
 
             <aside className={`fixed inset-y-0 left-0 z-50 flex flex-col w-[85vw] max-w-sm sm:w-80 h-[100dvh] theme-panel backdrop-blur-3xl shadow-[4px_0_24px_rgba(0,0,0,0.5)] custom-scrollbar theme-text md:relative transform transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] shrink-0 theme-border md:rounded-r-[2rem] overflow-hidden
               ${isOpen
-                    ? 'translate-x-0 border-r opacity-100 md:w-80 p-6'
-                    : '-translate-x-full opacity-0 md:border-none md:w-0 md:p-0 md:translate-x-0 p-6'
+                    ? 'translate-x-0 border-r opacity-100 md:w-80'
+                    : '-translate-x-full opacity-0 md:border-none md:w-0 md:translate-x-0'
                 }
             `}>
 
-                {/* Close Button (Visible on all screens to hide the Sidebar) */}
-                <button
-                    onClick={toggleSidebar}
-                    className="absolute top-6 right-6 theme-bg theme-border border p-2 rounded-xl theme-muted hover:text-red-500 hover:bg-red-500/10 transition-colors z-20"
-                    title="Close Sidebar"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                <div className="w-[85vw] max-w-sm sm:w-80 h-full flex flex-col shrink-0 relative p-6">
+                    {/* Close Button (Visible on all screens to hide the Sidebar) */}
+                    <button
+                        onClick={toggleSidebar}
+                        className="absolute top-6 right-6 theme-bg theme-border border p-2 rounded-xl theme-muted hover:text-red-500 hover:bg-red-500/10 transition-colors z-20"
+                        title="Close Sidebar"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
 
-                <div className="w-[85vw] max-w-sm sm:w-80 h-full flex flex-col shrink-0">
                     <div className="mb-10 text-center md:text-left mt-4 md:mt-0 relative shrink-0">
                         <div className="absolute top-1/2 left-4 w-12 h-12 bg-indigo-500/20 blur-[20px] rounded-full pointer-events-none -translate-y-1/2"></div>
                         <h1 className="text-3xl font-black theme-text tracking-tight flex items-center justify-center md:justify-start gap-2 relative z-10 w-max">

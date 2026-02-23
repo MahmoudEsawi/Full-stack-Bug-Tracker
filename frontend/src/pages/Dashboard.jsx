@@ -352,9 +352,9 @@ function Dashboard({ token, handleLogout }) {
 
               {/* Sidebar Toggle Button */}
               <button
-                className={`${isSidebarOpen ? 'hidden md:block opacity-0 pointer-events-none' : 'block'} p-2 rounded-xl theme-panel theme-muted theme-hover transition-colors`}
-                onClick={() => setIsSidebarOpen(true)}
-                title="Open Sidebar"
+                className="block p-2 rounded-xl theme-panel theme-muted theme-hover transition-colors"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                title={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
