@@ -157,7 +157,7 @@ function App() {
 
                     {/* Status Glow Indicator */}
                     <div className={`absolute left-0 top-0 bottom-0 w-1 ${ticket.status === 'Resolved' ? 'bg-green-500 shadow-[0_0_15px_#22c55e]' :
-                        ticket.priority === 'High' ? 'bg-red-500' : 'bg-transparent'
+                      ticket.priority === 'High' ? 'bg-red-500' : 'bg-transparent'
                       }`}></div>
 
                     <div className="flex justify-between items-start mb-3">
@@ -165,8 +165,8 @@ function App() {
                         {ticket.title}
                       </h3>
                       <span className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-sm ${ticket.priority === 'High' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
-                          ticket.priority === 'Medium' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
-                            'bg-green-500/20 text-green-300 border border-green-500/30'
+                        ticket.priority === 'Medium' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                          'bg-green-500/20 text-green-300 border border-green-500/30'
                         }`}>
                         {ticket.priority}
                       </span>
@@ -206,6 +206,14 @@ function App() {
 
           </div>
         </div>
+
+        {/* Footer */}
+        <footer className="mt-12 text-center text-gray-400 text-sm font-medium pb-8">
+          <p className="flex items-center justify-center gap-2">
+            Built with <span className="text-red-500 text-lg">❤️</span> by <a href="https://github.com/MahmoudEsawi" target="_blank" rel="noreferrer" className="text-purple-400 hover:text-pink-400 font-bold tracking-wide transition-colors">Mahmoud Esawi</a>
+          </p>
+        </footer>
+
       </div>
     </div>
   );
