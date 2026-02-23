@@ -73,61 +73,61 @@ function App() {
   const COLORS = ['#ef4444', '#22c55e']; // Red for active, Green for resolved
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-black p-4 md:p-8 font-sans text-gray-100 flex justify-center">
-      <div className="w-full max-w-5xl">
+    <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-800 flex justify-center">
+      <div className="w-full max-w-6xl">
 
         {/* Header Section */}
-        <header className="mb-10 text-center md:text-left flex flex-col md:flex-row justify-between items-center bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-3xl shadow-2xl">
+        <header className="mb-10 text-center md:text-left flex flex-col md:flex-row justify-between items-center bg-white p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 tracking-tight mb-2">
-              👾 Nexus Tracker
+            <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-3">
+              <span className="text-blue-600">Nexus</span> Tracker
             </h1>
-            <p className="text-gray-300 font-medium tracking-wide">Streamlined Bug & Issue Management</p>
+            <p className="text-slate-500 font-medium text-lg tracking-wide">Professional Bug & Issue Management</p>
           </div>
-          <div className="mt-4 md:mt-0 flex gap-4">
-            <div className="bg-white/10 px-6 py-3 rounded-2xl border border-white/10 shadow-inner backdrop-blur-sm">
-              <span className="block text-xs text-gray-400 uppercase font-bold tracking-wider">Total</span>
-              <span className="text-2xl font-black text-white">{tickets.length}</span>
+          <div className="mt-6 md:mt-0 flex gap-4">
+            <div className="bg-slate-50 px-6 py-4 rounded-2xl border border-slate-100 shadow-sm">
+              <span className="block text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Total Issues</span>
+              <span className="text-3xl font-black text-slate-800">{tickets.length}</span>
             </div>
-            <div className="bg-white/10 px-6 py-3 rounded-2xl border border-white/10 shadow-inner backdrop-blur-sm">
-              <span className="block text-xs text-green-400 uppercase font-bold tracking-wider">Resolved</span>
-              <span className="text-2xl font-black text-white">{resolvedCount}</span>
+            <div className="bg-emerald-50 px-6 py-4 rounded-2xl border border-emerald-100 shadow-sm">
+              <span className="block text-xs text-emerald-600 uppercase font-bold tracking-wider mb-1">Resolved</span>
+              <span className="text-3xl font-black text-emerald-700">{resolvedCount}</span>
             </div>
           </div>
         </header>
 
         {/* --- Dashboard / Charts Section --- */}
         {tickets.length > 0 && (
-          <div className="mb-10 bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-3xl shadow-xl flex flex-col md:flex-row items-center gap-8 hover:bg-white/10 transition duration-500">
+          <div className="mb-10 bg-white border border-slate-100 p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col md:flex-row items-center gap-10">
             <div className="w-full md:w-1/2">
-              <h2 className="text-2xl font-extrabold mb-2 text-white flex items-center gap-2">
-                <span className="bg-blue-500 w-2 h-8 rounded-full"></span> System Health
+              <h2 className="text-2xl font-bold mb-4 text-slate-800 flex items-center gap-3">
+                <span className="bg-blue-600 w-2 h-8 rounded-full"></span> System Health
               </h2>
-              <p className="text-gray-300 leading-relaxed mb-4">
-                Track your bug resolution rate in real-time. Currently, you have <strong className="text-white">{openCount}</strong> active issues out of <strong className="text-white">{tickets.length}</strong> total reported bugs.
+              <p className="text-slate-600 leading-relaxed mb-6 text-lg">
+                Track your bug resolution rate in real-time. Currently, you have <strong className="text-slate-900">{openCount}</strong> active issues out of <strong className="text-slate-900">{tickets.length}</strong> total reported bugs.
               </p>
 
-              {/* Progress Bar Alternative for Mobile/Quick view */}
-              <div className="w-full bg-gray-700/50 rounded-full h-4 relative overflow-hidden">
+              {/* Progress Bar */}
+              <div className="w-full bg-slate-100 rounded-full h-3 relative overflow-hidden">
                 <div
-                  className="bg-green-500 h-4 rounded-full shadow-[0_0_10px_#22c55e] transition-all duration-1000"
-                  style={{ width: `${(resolvedCount / tickets.length) * 100}%` }}
+                  className="bg-emerald-500 h-3 rounded-full transition-all duration-1000"
+                  style={{ width: `${(resolvedCount / (tickets.length || 1)) * 100}%` }}
                 ></div>
               </div>
-              <p className="text-right text-xs mt-2 text-gray-400 font-bold">
-                {Math.round((resolvedCount / tickets.length) * 100)}% Resolved
+              <p className="text-right text-sm mt-3 text-slate-500 font-bold">
+                {Math.round((resolvedCount / (tickets.length || 1)) * 100)}% Resolved
               </p>
             </div>
 
-            <div className="w-full md:w-1/2 h-64">
+            <div className="w-full md:w-1/2 h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={chartData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={90}
+                    innerRadius={70}
+                    outerRadius={100}
                     paddingAngle={5}
                     dataKey="value"
                     stroke="none"
@@ -137,10 +137,10 @@ function App() {
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
-                    itemStyle={{ color: '#fff' }}
+                    contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #f1f5f9', borderRadius: '12px', color: '#1e293b', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                    itemStyle={{ color: '#1e293b', fontWeight: 'bold' }}
                   />
-                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ color: '#fff' }} />
+                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ color: '#64748b', fontWeight: '600' }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -150,44 +150,44 @@ function App() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Form */}
           <div className="lg:col-span-1">
-            <form onSubmit={handleSubmit} className="bg-white/10 backdrop-blur-xl p-6 rounded-3xl shadow-2xl border border-white/20 sticky top-8 hover:bg-white/20 transition duration-500">
-              <h2 className="text-2xl font-extrabold mb-6 text-white flex items-center gap-2">
-                <span className="bg-purple-500 w-2 h-8 rounded-full"></span> Report Issue
+            <form onSubmit={handleSubmit} className="bg-white p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 sticky top-8">
+              <h2 className="text-xl font-bold mb-6 text-slate-800 flex items-center gap-3">
+                <span className="bg-blue-600 w-2 h-6 rounded-full"></span> Report Issue
               </h2>
 
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-1 ml-1">Title</label>
+                  <label className="block text-sm font-bold text-slate-600 mb-2 ml-1">Issue Title</label>
                   <input
                     type="text" placeholder="e.g., API returning 500" required
-                    className="w-full p-3 bg-black/30 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-500 transition"
+                    className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-slate-800 placeholder-slate-400 transition-all font-medium"
                     value={newTicket.title} onChange={e => setNewTicket({ ...newTicket, title: e.target.value })}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-1 ml-1">Description</label>
+                  <label className="block text-sm font-bold text-slate-600 mb-2 ml-1">Detailed Description</label>
                   <textarea
                     placeholder="Steps to reproduce..." required rows="4"
-                    className="w-full p-3 bg-black/30 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-500 transition resize-none"
+                    className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-slate-800 placeholder-slate-400 transition-all resize-none font-medium"
                     value={newTicket.description} onChange={e => setNewTicket({ ...newTicket, description: e.target.value })}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-1 ml-1">Severity / Priority</label>
+                  <label className="block text-sm font-bold text-slate-600 mb-2 ml-1">Severity / Priority</label>
                   <select
-                    className="w-full p-3 bg-black/30 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white appearance-none cursor-pointer transition"
+                    className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-slate-800 appearance-none cursor-pointer transition-all font-bold"
                     value={newTicket.priority} onChange={e => setNewTicket({ ...newTicket, priority: e.target.value })}
                   >
-                    <option value="Low" className="bg-gray-900 text-white">🟢 Low</option>
-                    <option value="Medium" className="bg-gray-900 text-white">🟡 Medium</option>
-                    <option value="High" className="bg-gray-900 text-white">🔴 High</option>
+                    <option value="Low">🟢 Low Priority</option>
+                    <option value="Medium">🟡 Medium Priority</option>
+                    <option value="High">🔴 High Priority</option>
                   </select>
                 </div>
 
-                <button type="submit" className="mt-2 w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-purple-500/30 hover:scale-[1.02] active:scale-95 transition-all duration-300">
-                  + Create Ticket
+                <button type="submit" className="mt-2 w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
+                  Create Ticket
                 </button>
               </div>
             </form>
@@ -197,50 +197,56 @@ function App() {
           <div className="lg:col-span-2 flex flex-col gap-6">
 
             {/* Search Bar */}
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 p-2 rounded-2xl flex items-center gap-3">
-              <span className="pl-4 text-2xl">🔍</span>
+            <div className="bg-white border border-slate-200 p-2 rounded-2xl flex items-center gap-3 shadow-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all">
+              <span className="pl-4 text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+              </span>
               <input
                 type="text"
                 placeholder="Search tickets by title or content..."
-                className="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none py-3 pr-4"
+                className="w-full bg-transparent text-slate-800 placeholder-slate-400 focus:outline-none py-3 pr-4 font-medium"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
               />
             </div>
 
             {/* Tickets Grid */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-5">
               {filteredTickets.length === 0 ? (
-                <div className="text-center p-12 bg-white/5 border border-white/10 rounded-3xl border-dashed">
-                  <p className="text-gray-400 text-lg">No bugs found. Everything looks perfect! 🚀</p>
+                <div className="text-center p-16 bg-white border border-slate-200 rounded-[2rem] border-dashed">
+                  <p className="text-slate-500 text-lg font-medium">No tickets found. You are all caught up! ✨</p>
                 </div>
               ) : (
                 filteredTickets.map(ticket => (
-                  <div key={ticket._id} className="group bg-white/10 backdrop-blur-lg p-6 rounded-3xl shadow-xl border border-white/10 hover:border-purple-400/50 hover:bg-white/20 transition-all duration-300 relative overflow-hidden">
+                  <div key={ticket._id} className="group bg-white p-7 rounded-[2rem] shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition-all duration-300 relative overflow-hidden flex flex-col h-full">
 
-                    {/* Status Glow Indicator */}
-                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${ticket.status === 'Resolved' ? 'bg-green-500 shadow-[0_0_15px_#22c55e]' :
-                      ticket.priority === 'High' ? 'bg-red-500' : 'bg-transparent'
+                    {/* Status Indicator */}
+                    <div className={`absolute left-0 top-0 bottom-0 w-1.5 transition-colors ${ticket.status === 'Resolved' ? 'bg-emerald-500' :
+                        ticket.priority === 'High' ? 'bg-red-500' :
+                          ticket.priority === 'Medium' ? 'bg-amber-500' : 'bg-blue-400'
                       }`}></div>
 
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className={`text-xl font-bold pr-4 ${ticket.status === 'Resolved' ? 'text-gray-400 line-through decoration-gray-500/50' : 'text-white'}`}>
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className={`text-xl font-bold pr-4 ${ticket.status === 'Resolved' ? 'text-slate-400 line-through decoration-slate-300' : 'text-slate-800'}`}>
                         {ticket.title}
                       </h3>
-                      <span className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-sm ${ticket.priority === 'High' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
-                        ticket.priority === 'Medium' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
-                          'bg-green-500/20 text-green-300 border border-green-500/30'
+                      <span className={`shrink-0 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wide inline-flex items-center gap-1.5 ${ticket.priority === 'High' ? 'bg-red-50 text-red-700 border border-red-100' :
+                          ticket.priority === 'Medium' ? 'bg-amber-50 text-amber-700 border border-amber-100' :
+                            'bg-blue-50 text-blue-700 border border-blue-100'
                         }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${ticket.priority === 'High' ? 'bg-red-500' : ticket.priority === 'Medium' ? 'bg-amber-500' : 'bg-blue-500'}`}></span>
                         {ticket.priority}
                       </span>
                     </div>
 
-                    <p className={`text-sm mb-6 leading-relaxed ${ticket.status === 'Resolved' ? 'text-gray-500' : 'text-gray-300'}`}>
+                    <p className={`text-slate-600 mb-8 leading-relaxed font-medium ${ticket.status === 'Resolved' ? 'opacity-60' : ''}`}>
                       {ticket.description}
                     </p>
 
-                    <div className="flex flex-wrap items-center justify-between gap-3 mt-auto pt-4 border-t border-white/10">
-                      <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-widest ${ticket.status === 'Resolved' ? 'text-green-400 bg-green-400/10' : 'text-purple-300 bg-purple-400/10'
+                    <div className="flex flex-wrap items-center justify-between gap-3 mt-auto pt-5 border-t border-slate-100">
+                      <span className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest ${ticket.status === 'Resolved' ? 'text-emerald-700 bg-emerald-50 border border-emerald-100' : 'text-slate-500 bg-slate-50 border border-slate-200'
                         }`}>
                         {ticket.status}
                       </span>
@@ -249,14 +255,14 @@ function App() {
                         {ticket.status !== 'Resolved' && (
                           <button
                             onClick={() => handleUpdate(ticket._id)}
-                            className="bg-white/10 hover:bg-green-500/20 text-green-300 border border-transparent hover:border-green-500/50 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200"
+                            className="text-emerald-600 bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200"
                           >
                             Mark Done
                           </button>
                         )}
                         <button
                           onClick={() => handleDelete(ticket._id)}
-                          className="bg-white/10 hover:bg-red-500/20 text-red-300 border border-transparent hover:border-red-500/50 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200"
+                          className="text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200"
                         >
                           Delete
                         </button>
@@ -271,9 +277,9 @@ function App() {
         </div>
 
         {/* Footer */}
-        <footer className="mt-12 text-center text-gray-400 text-sm font-medium pb-8">
+        <footer className="mt-16 text-center text-slate-400 text-sm font-medium pb-8">
           <p className="flex items-center justify-center gap-2">
-            Built with <span className="text-red-500 text-lg">❤️</span> by <a href="https://github.com/MahmoudEsawi" target="_blank" rel="noreferrer" className="text-purple-400 hover:text-pink-400 font-bold tracking-wide transition-colors">Mahmoud Esawi</a>
+            Built with <span className="text-red-500 text-lg">❤️</span> by <a href="https://github.com/MahmoudEsawi" target="_blank" rel="noreferrer" className="text-blue-500 hover:text-blue-600 font-bold hover:underline transition-colors">Mahmoud Esawi</a>
           </p>
         </footer>
 
