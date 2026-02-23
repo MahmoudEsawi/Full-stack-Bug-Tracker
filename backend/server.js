@@ -10,6 +10,7 @@ const Notification = require('./models/Notification');
 
 const authRoutes = require('./routes/authRoute');
 const notificationRoutes = require('./routes/notificationRoute');
+const projectRoutes = require('./routes/projectRoute');
 const authMiddleware = require('./middleware/authMiddleware');
 
 const app = express();
@@ -24,11 +25,23 @@ mongoose.connect(process.env.MONGO_URI)
 // Auth & Notification Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/projects', projectRoutes);
 
 // API لجلب كل التذاكر الخاصة بالفريق
 app.get('/api/tickets', authMiddleware, async (req, res) => {
     try {
-        const tickets = await Ticket.find({ team: req.user.teamId })
+        if (!req.user.teamId) {
+            return res.json([]);
+        }
+
+        const query = { team: req.user.teamId };
+
+        // Filter by project if provided
+        if (req.query.projectId) {
+            query.project = req.query.projectId;
+        }
+
+        const tickets = await Ticket.find(query)
             .populate('user', 'username')
             .populate('closedBy', 'username')
             .populate('comments.user', 'username')
@@ -42,10 +55,15 @@ app.get('/api/tickets', authMiddleware, async (req, res) => {
 // API لإضافة تذكرة جديدة
 app.post('/api/tickets', authMiddleware, async (req, res) => {
     try {
+        if (!req.body.projectId) {
+            return res.status(400).json({ message: "A ticket must belong to a specific project." });
+        }
+
         const newTicket = new Ticket({
             ...req.body,
             user: req.user.id, // Attach the logged in user's ID
-            team: req.user.teamId // Attach the shared team ID
+            team: req.user.teamId, // Attach the shared team ID
+            project: req.body.projectId // Attach the project ID
         });
         await newTicket.save();
 

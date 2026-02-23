@@ -21,6 +21,11 @@ function Dashboard({ token, handleLogout }) {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileData, setProfileData] = useState({ username: '', password: '' });
 
+  // Phase 6 States
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+  const [projects, setProjects] = useState([]);
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
+
   // Extract User info from Token
   const decodedToken = jwtDecode(token);
 
@@ -36,15 +41,55 @@ function Dashboard({ token, handleLogout }) {
     headers: { Authorization: `Bearer ${token}` }
   };
 
-  // Fetch tickets & notifications on mount
+  // Handle Theme Changes
   useEffect(() => {
-    fetchTickets();
-    fetchNotifications();
-  }, []);
+    if (theme === 'light') {
+      document.body.classList.add('light');
+    } else {
+      document.body.classList.remove('light');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
+  // Fetch notifications and projects on mount
+  useEffect(() => {
+    if (decodedToken?.user?.teamId) {
+      fetchProjects();
+      fetchNotifications();
+    }
+  }, [decodedToken?.user?.teamId]);
+
+  // Fetch tickets when selected project changes
+  useEffect(() => {
+    if (selectedProjectId) {
+      fetchTickets();
+    } else {
+      setTickets([]);
+    }
+  }, [selectedProjectId]);
+
+  const fetchProjects = async () => {
+    try {
+      const res = await axios.get('/api/projects', authConfig);
+      setProjects(res.data);
+      // Auto-select first project if none is selected
+      if (res.data.length > 0 && !selectedProjectId) {
+        setSelectedProjectId(res.data[0]._id);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
 
   const fetchTickets = async () => {
+    if (!selectedProjectId) return;
     try {
-      const res = await axios.get(API_URL, authConfig);
+      const url = `/api/tickets?projectId=${selectedProjectId}`;
+      const res = await axios.get(url, authConfig);
       setTickets(res.data);
     } catch (error) {
       console.error("Error fetching tickets:", error);
@@ -79,9 +124,13 @@ function Dashboard({ token, handleLogout }) {
   // Submit new ticket
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!selectedProjectId) {
+      return alert("Please select or create a project first.");
+    }
+
     try {
-      await axios.post(API_URL, newTicket, authConfig);
-      setNewTicket({ title: '', description: '', priority: 'Low' });
+      await axios.post(API_URL, { ...newTicket, projectId: selectedProjectId }, authConfig);
+      setNewTicket({ ...newTicket, title: '', description: '' });
       fetchTickets();
     } catch (error) {
       console.error("Error adding ticket:", error);
@@ -252,6 +301,12 @@ function Dashboard({ token, handleLogout }) {
           setIsSidebarOpen(false);
           setShowProfileModal(true);
         }}
+        theme={theme}
+        toggleTheme={toggleTheme}
+        projects={projects}
+        fetchProjects={fetchProjects}
+        selectedProjectId={selectedProjectId}
+        setSelectedProjectId={setSelectedProjectId}
       />
 
       <main className="flex-1 p-4 md:p-8 h-screen overflow-y-auto relative z-10 custom-scrollbar">
@@ -408,6 +463,13 @@ function Dashboard({ token, handleLogout }) {
 
               {/* Report New Ticket Bar */}
               <div className="mb-8 relative z-20">
+                <div className="mb-4 flex items-center gap-3 px-2">
+                  <h3 className="text-xl font-black text-white flex items-center gap-2">
+                    <span className="text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]">❖</span>
+                    {projects.find(p => p._id === selectedProjectId)?.name || 'Select a Project'}
+                  </h3>
+                  <span className="bg-slate-800 border border-slate-700 text-slate-400 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest hidden sm:inline-block">Active Workspace</span>
+                </div>
                 <form onSubmit={handleSubmit} className="glass-panel p-6 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-4 items-end">
                   <div className="w-full md:w-1/3">
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Issue Title</label>

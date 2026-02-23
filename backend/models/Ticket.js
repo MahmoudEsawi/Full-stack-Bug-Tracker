@@ -11,6 +11,11 @@ const ticketSchema = new mongoose.Schema({
         ref: 'Team',
         required: true
     },
+    project: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Project',
+        required: true
+    },
     title: {
         type: String,
         required: true,
