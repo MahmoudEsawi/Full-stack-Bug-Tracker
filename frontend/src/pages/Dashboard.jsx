@@ -337,30 +337,31 @@ function Dashboard({ token, handleLogout }) {
         setSelectedProjectId={setSelectedProjectId}
       />
 
-      <main className={`flex-1 p-4 md:p-8 h-[100dvh] overflow-y-auto relative z-10 custom-scrollbar transition-all duration-400 ${!isSidebarOpen ? 'md:pl-20 pt-20 md:pt-8' : ''}`}>
+      <main className={`flex-1 p-4 md:p-8 h-[100dvh] overflow-y-auto relative z-10 custom-scrollbar transition-all duration-400 ${!isSidebarOpen ? 'md:pl-20' : ''}`}>
         <div className="w-full max-w-7xl mx-auto">
 
-          {/* Permanent Sidebar Toggle (Visible when sidebar is closed) */}
-          {!isSidebarOpen && (
-            <button
-              onClick={() => setIsSidebarOpen(true)}
-              className="fixed top-4 md:top-8 left-4 md:left-6 z-40 p-2.5 md:p-3 rounded-2xl theme-panel theme-border border shadow-lg theme-muted hover:text-indigo-500 hover:border-indigo-500/30 transition-all group"
-              title="Open Workspace Portal"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 group-hover:scale-110 transition-transform">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-              </svg>
-            </button>
-          )}
-
           {/* Header Section */}
-          <header className={`mb-8 md:mb-10 flex flex-col md:flex-row justify-between lg:items-center glass-panel p-5 md:p-8 rounded-[2rem] shadow-2xl shadow-black/20 gap-4 md:gap-6 ${!isSidebarOpen ? 'ml-12 md:ml-0' : ''}`}>
+          <header className="relative z-50 mb-8 md:mb-10 flex flex-col md:flex-row justify-between lg:items-center glass-panel p-5 md:p-8 rounded-[2rem] shadow-2xl shadow-black/20 gap-4 md:gap-6">
             <div className="w-full md:w-auto flex justify-between items-start md:items-center">
-              <div>
-                <h1 className="text-2xl sm:text-3xl md:text-5xl font-black theme-text tracking-tight mb-1 md:mb-3">
-                  <span className="text-indigo-500 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-fuchsia-500">Nexus</span> Tracker
-                </h1>
-                <p className="theme-muted font-medium text-[10px] sm:text-xs md:text-lg tracking-widest uppercase mt-1">Professional Issue Management</p>
+              <div className="flex items-start md:items-center gap-4">
+                {/* Permanent Sidebar Toggle (Visible when sidebar is closed) */}
+                {!isSidebarOpen && (
+                  <button
+                    onClick={() => setIsSidebarOpen(true)}
+                    className="md:fixed md:top-8 md:left-6 md:z-40 p-2.5 md:p-3 rounded-2xl theme-panel theme-border border shadow-lg theme-muted hover:text-indigo-500 hover:border-indigo-500/30 transition-all group shrink-0"
+                    title="Open Workspace Portal"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 group-hover:scale-110 transition-transform">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                  </button>
+                )}
+                <div>
+                  <h1 className="text-2xl sm:text-3xl md:text-5xl font-black theme-text tracking-tight mb-1 md:mb-3">
+                    <span className="text-indigo-500 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-fuchsia-500">Nexus</span> Tracker
+                  </h1>
+                  <p className="theme-muted font-medium text-[10px] sm:text-xs md:text-lg tracking-widest uppercase mt-1">Professional Issue Management</p>
+                </div>
               </div>
             </div>
             {decodedToken?.user?.teamId && (
@@ -461,7 +462,7 @@ function Dashboard({ token, handleLogout }) {
 
               {/* --- Dashboard / Charts Section --- */}
               {tickets.length > 0 && (
-                <div className="mb-10 glass-panel p-8 rounded-[2rem] shadow-2xl shadow-black/20 flex flex-col md:flex-row items-center gap-10">
+                <div className="mb-10 glass-panel p-6 md:p-8 rounded-[2rem] shadow-2xl shadow-black/20 flex flex-col md:flex-row items-center gap-10 relative z-20">
                   <div className="w-full md:w-1/2">
                     <h2 className="text-2xl font-bold mb-4 theme-text flex items-center gap-3">
                       <span className="bg-indigo-500 shadow-[0_0_10px_#6366f1] w-2 h-8 rounded-full"></span> System Health
@@ -482,7 +483,7 @@ function Dashboard({ token, handleLogout }) {
                     </p>
                   </div>
 
-                  <div className="w-full md:w-1/2 h-72">
+                  <div className="w-full md:w-1/2 h-64 sm:h-72">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
