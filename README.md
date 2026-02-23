@@ -26,6 +26,19 @@ _No more lost bug reports. No more emails. Just pure, organized issue management
 
 ---
 
+## 🚦 Application User Flow
+
+Understanding the application lifecycle is straightforward:
+
+1. **Authentication Gate**: Any new visitor is immediately presented with the Login or Registration screen.
+2. **Account Creation**: Users must register an account (with automated DB validation and password hashing).
+3. **Session Issuance**: Upon successful login, securely encrypted JWT tokens are assigned to the user's local session.
+4. **The Dashboard**: Users are redirected to the main dashboard where their reported bugs are strictly displayed.
+5. **Issue Triage**: Users can report new bugs (saving the assigned User ID to the DB), search their existing tickets, modify ticket states, or safely delete resolved tickets.
+6. **Logout**: User effectively concludes operations and terminates the session manually.
+
+---
+
 ## 💻 Tech Stack Galaxy
 
 The application is built on the battle-tested **MERN** stack, augmented entirely for speed and modern standards.
