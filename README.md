@@ -8,6 +8,12 @@
 
 A modern, responsive, and full-stack Issue/Bug Tracking System built with the **MERN** stack (MongoDB, Express, React, Node.js). This project is designed to help individuals and teams efficiently report, track, and manage software bugs and technical issues.
 
+## 🌐 Live Demo
+- **Frontend App (Vercel)**: [https://full-stack-bug-tracker.vercel.app](https://full-stack-bug-tracker.vercel.app)
+- **Backend API (Render)**: [https://full-stack-bug-tracker.onrender.com/api/tickets](https://full-stack-bug-tracker.onrender.com/api/tickets)
+
+<br/>
+
 ## ✨ Key Features
 - **Full CRUD Operations**: Create new bugs, view active tickets, update ticket statuses (Mark as Done), and delete resolved easily.
 - **RESTful API backend**: Fully custom Node.js & Express server connected to a MongoDB database.
