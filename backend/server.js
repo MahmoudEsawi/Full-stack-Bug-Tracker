@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
+const path = require('path');
 const Ticket = require('./models/Ticket');
 
 const app = express();
@@ -50,6 +51,17 @@ app.delete('/api/tickets/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete ticket' });
     }
 });
+
+// --- Serve React Frontend in Production ---
+const _dirname = path.resolve();
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(_dirname, '/frontend/dist')));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(_dirname, 'frontend', 'dist', 'index.html'));
+    });
+}
+// ------------------------------------------
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
