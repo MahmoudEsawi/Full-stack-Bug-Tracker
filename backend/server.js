@@ -21,10 +21,10 @@ mongoose.connect(process.env.MONGO_URI)
 // Auth Routes
 app.use('/api/auth', authRoutes);
 
-// API لجلب كل التذاكر الخاصة بالمستخدم
+// API لجلب كل التذاكر الخاصة بالفريق
 app.get('/api/tickets', authMiddleware, async (req, res) => {
     try {
-        const tickets = await Ticket.find({ user: req.user.id }).sort({ createdAt: -1 });
+        const tickets = await Ticket.find({ teamCode: req.user.teamCode }).sort({ createdAt: -1 });
         res.json(tickets);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch tickets' });
@@ -36,7 +36,8 @@ app.post('/api/tickets', authMiddleware, async (req, res) => {
     try {
         const newTicket = new Ticket({
             ...req.body,
-            user: req.user.id // Attach the logged in user's ID
+            user: req.user.id, // Attach the logged in user's ID
+            teamCode: req.user.teamCode // Attach the shared team code
         });
         await newTicket.save();
         res.status(201).json(newTicket);
@@ -48,11 +49,11 @@ app.post('/api/tickets', authMiddleware, async (req, res) => {
 // API لتحديث حالة التذكرة
 app.put('/api/tickets/:id', authMiddleware, async (req, res) => {
     try {
-        // Ensure the ticket belongs to the user
+        // Ensure the ticket belongs to the user's team
         let ticket = await Ticket.findById(req.params.id);
         if (!ticket) return res.status(404).json({ message: 'Ticket not found' });
 
-        if (ticket.user.toString() !== req.user.id) {
+        if (ticket.teamCode !== req.user.teamCode) {
             return res.status(401).json({ message: 'User not authorized to update this ticket' });
         }
 
@@ -70,11 +71,11 @@ app.put('/api/tickets/:id', authMiddleware, async (req, res) => {
 // API لحذف تذكرة
 app.delete('/api/tickets/:id', authMiddleware, async (req, res) => {
     try {
-        // Ensure the ticket belongs to the user
+        // Ensure the ticket belongs to the user's team
         let ticket = await Ticket.findById(req.params.id);
         if (!ticket) return res.status(404).json({ message: 'Ticket not found' });
 
-        if (ticket.user.toString() !== req.user.id) {
+        if (ticket.teamCode !== req.user.teamCode) {
             return res.status(401).json({ message: 'User not authorized to delete this ticket' });
         }
 
@@ -97,4 +98,4 @@ if (process.env.NODE_ENV === 'production') {
 // ------------------------------------------
 
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));// Trigger nodemon restart

@@ -12,6 +12,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 6
+    },
+    teamCode: {
+        type: String,
+        required: true,
+        trim: true,
+        uppercase: true
     }
 }, { timestamps: true });
 

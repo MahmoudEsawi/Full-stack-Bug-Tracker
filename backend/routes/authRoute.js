@@ -8,7 +8,7 @@ const router = express.Router();
 // @route   POST /api/auth/register
 // @desc    Register a new user
 router.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, teamCode } = req.body;
 
     try {
         // Check if user already exists
@@ -17,7 +17,7 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        user = new User({ username, password });
+        user = new User({ username, password, teamCode });
 
         // Hash the password
         const salt = await bcrypt.genSalt(10);
@@ -29,7 +29,8 @@ router.post('/register', async (req, res) => {
         const payload = {
             user: {
                 id: user.id,
-                username: user.username
+                username: user.username,
+                teamCode: user.teamCode
             }
         };
 
@@ -40,7 +41,7 @@ router.post('/register', async (req, res) => {
             { expiresIn: '7d' }, // Token valid for 7 days
             (err, token) => {
                 if (err) throw err;
-                res.json({ token, user: { id: user.id, username: user.username } });
+                res.json({ token, user: { id: user.id, username: user.username, teamCode: user.teamCode } });
             }
         );
 
@@ -72,7 +73,8 @@ router.post('/login', async (req, res) => {
         const payload = {
             user: {
                 id: user.id,
-                username: user.username
+                username: user.username,
+                teamCode: user.teamCode
             }
         };
 
@@ -83,7 +85,7 @@ router.post('/login', async (req, res) => {
             { expiresIn: '7d' },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token, user: { id: user.id, username: user.username } });
+                res.json({ token, user: { id: user.id, username: user.username, teamCode: user.teamCode } });
             }
         );
 

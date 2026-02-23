@@ -6,6 +6,12 @@ const ticketSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    teamCode: {
+        type: String,
+        required: true,
+        uppercase: true,
+        trim: true
+    },
     title: {
         type: String,
         required: true,
