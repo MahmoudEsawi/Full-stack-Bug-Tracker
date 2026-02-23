@@ -243,7 +243,7 @@ function Dashboard({ token, handleLogout }) {
     >
 
       {/* Top Banner (Priority & Date) */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-4 gap-2">
         <span className={`shrink-0 px-2.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1.5 ${ticket.priority === 'High' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
           ticket.priority === 'Medium' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
             'bg-indigo-500/10 text-indigo-500 border border-indigo-500/20'
@@ -251,16 +251,16 @@ function Dashboard({ token, handleLogout }) {
           <span className={`w-1.5 h-1.5 rounded-full ${ticket.priority === 'High' ? 'bg-red-500 shadow-[0_0_8px_#ef4444]' : ticket.priority === 'Medium' ? 'bg-amber-500 shadow-[0_0_8px_#f59e0b]' : 'bg-indigo-500 shadow-[0_0_8px_#6366f1]'}`}></span>
           {ticket.priority}
         </span>
-        <span className="text-[10px] font-bold theme-muted">
+        <span className="text-[10px] font-bold theme-muted shrink-0 text-right">
           {ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString() : ''}
         </span>
       </div>
 
-      <h3 className={`text-[17px] font-bold mb-3 ${ticket.status === 'Resolved' ? 'theme-muted line-through opacity-75' : 'theme-text'}`}>
+      <h3 className={`text-[17px] font-bold mb-3 break-words ${ticket.status === 'Resolved' ? 'theme-muted line-through opacity-75' : 'theme-text'}`}>
         {ticket.title}
       </h3>
 
-      <p className={`text-[13px] theme-muted mb-6 leading-relaxed font-medium flex-1 ${ticket.status === 'Resolved' ? 'opacity-50' : ''}`}>
+      <p className={`text-[13px] theme-muted mb-6 leading-relaxed font-medium flex-1 break-words line-clamp-3 ${ticket.status === 'Resolved' ? 'opacity-50' : ''}`}>
         {ticket.description}
       </p>
 
@@ -337,14 +337,14 @@ function Dashboard({ token, handleLogout }) {
         setSelectedProjectId={setSelectedProjectId}
       />
 
-      <main className={`flex-1 p-4 md:p-8 h-screen overflow-y-auto relative z-10 custom-scrollbar transition-all duration-400 ${!isSidebarOpen ? 'md:pl-20' : ''}`}>
+      <main className={`flex-1 p-4 md:p-8 h-[100dvh] overflow-y-auto relative z-10 custom-scrollbar transition-all duration-400 ${!isSidebarOpen ? 'md:pl-20 pt-20 md:pt-8' : ''}`}>
         <div className="w-full max-w-7xl mx-auto">
 
           {/* Permanent Sidebar Toggle (Visible when sidebar is closed) */}
           {!isSidebarOpen && (
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="fixed top-8 left-6 z-40 p-3 rounded-2xl theme-panel theme-border border shadow-lg theme-muted hover:text-indigo-500 hover:border-indigo-500/30 transition-all group"
+              className="fixed top-4 md:top-8 left-4 md:left-6 z-40 p-2.5 md:p-3 rounded-2xl theme-panel theme-border border shadow-lg theme-muted hover:text-indigo-500 hover:border-indigo-500/30 transition-all group"
               title="Open Workspace Portal"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 group-hover:scale-110 transition-transform">
@@ -354,13 +354,13 @@ function Dashboard({ token, handleLogout }) {
           )}
 
           {/* Header Section */}
-          <header className="mb-10 flex flex-col md:flex-row justify-between md:items-center glass-panel p-6 md:p-8 rounded-[2rem] shadow-2xl shadow-black/20 gap-6">
-            <div className="w-full md:w-auto flex justify-between items-center">
+          <header className={`mb-8 md:mb-10 flex flex-col md:flex-row justify-between lg:items-center glass-panel p-5 md:p-8 rounded-[2rem] shadow-2xl shadow-black/20 gap-4 md:gap-6 ${!isSidebarOpen ? 'ml-12 md:ml-0' : ''}`}>
+            <div className="w-full md:w-auto flex justify-between items-start md:items-center">
               <div>
-                <h1 className="text-3xl md:text-5xl font-black theme-text tracking-tight mb-2 md:mb-3">
+                <h1 className="text-2xl sm:text-3xl md:text-5xl font-black theme-text tracking-tight mb-1 md:mb-3">
                   <span className="text-indigo-500 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-fuchsia-500">Nexus</span> Tracker
                 </h1>
-                <p className="theme-muted font-medium text-sm md:text-lg tracking-wide uppercase text-[10px] tracking-widest mt-1">Professional Issue Management</p>
+                <p className="theme-muted font-medium text-[10px] sm:text-xs md:text-lg tracking-widest uppercase mt-1">Professional Issue Management</p>
               </div>
             </div>
             {decodedToken?.user?.teamId && (
@@ -541,7 +541,7 @@ function Dashboard({ token, handleLogout }) {
               </div>
 
               {/* Trello Board Grid */}
-              <div className="flex flex-col xl:flex-row gap-6 overflow-x-auto pb-6 custom-scrollbar items-start min-h-[500px]">
+              <div className="flex flex-row gap-6 overflow-x-auto pb-8 custom-scrollbar items-start min-h-[500px] snap-x snap-mandatory px-2 md:px-0">
                 <DragDropContext onDragEnd={onDragEnd}>
                   {columns.map(col => {
                     const colTickets = filteredTickets.filter(t => t.status === col.status);
@@ -550,7 +550,7 @@ function Dashboard({ token, handleLogout }) {
                       <Droppable key={col.status} droppableId={col.status}>
                         {(provided, snapshot) => (
                           <div
-                            className={`flex-[1] xl:w-[350px] min-w-[280px] sm:min-w-[320px] rounded-[2rem] border theme-border theme-panel p-4 flex flex-col shadow-inner max-h-[70vh] ${snapshot.isDraggingOver ? 'bg-indigo-500/10' : ''}`}
+                            className={`flex-[1] xl:w-[350px] min-w-[85vw] sm:min-w-[320px] snap-center rounded-[2rem] border theme-border theme-panel p-4 flex flex-col shadow-inner max-h-[70vh] md:max-h-[80vh] ${snapshot.isDraggingOver ? 'bg-indigo-500/10' : ''}`}
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                           >
