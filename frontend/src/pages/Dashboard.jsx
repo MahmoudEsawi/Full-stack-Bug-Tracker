@@ -239,7 +239,7 @@ function Dashboard({ token, handleLogout }) {
       {...provided?.draggableProps}
       {...provided?.dragHandleProps}
       style={{ ...provided?.draggableProps.style }}
-      className="group p-5 md:p-6 rounded-2xl theme-glass theme-border border hover:border-indigo-400/50 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] relative flex flex-col min-h-[220px] mb-4 shrink-0 transition-colors"
+      className="group p-5 md:p-6 rounded-2xl theme-glass theme-border border hover:border-indigo-400/50 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] relative flex flex-col mb-4 shrink-0 transition-colors h-auto"
     >
 
       {/* Top Banner (Priority & Date) */}
@@ -260,12 +260,12 @@ function Dashboard({ token, handleLogout }) {
         {ticket.title}
       </h3>
 
-      <p className={`text-[13px] theme-muted mb-6 leading-relaxed font-medium flex-1 break-words line-clamp-3 ${ticket.status === 'Resolved' ? 'opacity-50' : ''}`}>
+      <p className={`text-[13px] theme-muted mb-4 leading-relaxed font-medium break-words line-clamp-3 ${ticket.status === 'Resolved' ? 'opacity-50' : ''}`}>
         {ticket.description}
       </p>
 
       {/* Ticket History Metadata */}
-      <div className="theme-panel p-3 rounded-xl border mb-4 space-y-2">
+      <div className="theme-panel p-3 rounded-xl border mb-4 space-y-2 mt-auto">
         <div className="flex justify-between items-center text-xs">
           <span className="theme-muted font-medium">Opened by:</span>
           <span className="font-bold theme-text">{ticket.user?.username || 'Unknown'}</span>
@@ -341,31 +341,29 @@ function Dashboard({ token, handleLogout }) {
         <div className="w-full max-w-7xl mx-auto">
 
           {/* Header Section */}
-          <header className="relative z-50 mb-8 md:mb-10 flex flex-col md:flex-row justify-between lg:items-center glass-panel p-5 md:p-8 rounded-[2rem] shadow-2xl shadow-black/20 gap-4 md:gap-6">
-            <div className="w-full md:w-auto flex justify-between items-start md:items-center">
-              <div className="flex items-start md:items-center gap-4">
-                {/* Permanent Sidebar Toggle (Visible when sidebar is closed) */}
-                {!isSidebarOpen && (
-                  <button
-                    onClick={() => setIsSidebarOpen(true)}
-                    className="md:fixed md:top-8 md:left-6 md:z-40 p-2.5 md:p-3 rounded-2xl theme-panel theme-border border shadow-lg theme-muted hover:text-indigo-500 hover:border-indigo-500/30 transition-all group shrink-0"
-                    title="Open Workspace Portal"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 group-hover:scale-110 transition-transform">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                    </svg>
-                  </button>
-                )}
-                <div>
-                  <h1 className="text-2xl sm:text-3xl md:text-5xl font-black theme-text tracking-tight mb-1 md:mb-3">
-                    <span className="text-indigo-500 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-fuchsia-500">Nexus</span> Tracker
-                  </h1>
-                  <p className="theme-muted font-medium text-[10px] sm:text-xs md:text-lg tracking-widest uppercase mt-1">Professional Issue Management</p>
-                </div>
+          <header className="relative z-50 mb-8 md:mb-10 flex flex-row flex-wrap justify-between items-center glass-panel p-5 md:p-8 rounded-[2rem] shadow-2xl shadow-black/20 gap-4 md:gap-6">
+            <div className="flex items-center gap-4">
+              {/* Permanent Sidebar Toggle (Visible when sidebar is closed) */}
+              {!isSidebarOpen && (
+                <button
+                  onClick={() => setIsSidebarOpen(true)}
+                  className="md:fixed md:top-8 md:left-6 md:z-40 p-2.5 md:p-3 rounded-2xl theme-panel theme-border border shadow-lg theme-muted hover:text-indigo-500 hover:border-indigo-500/30 transition-all group shrink-0"
+                  title="Open Workspace Portal"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 group-hover:scale-110 transition-transform">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                  </svg>
+                </button>
+              )}
+              <div>
+                <h1 className="text-xl sm:text-3xl md:text-5xl font-black theme-text tracking-tight mb-0.5 md:mb-3">
+                  <span className="text-indigo-500 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-fuchsia-500">Nexus</span> Tracker
+                </h1>
+                <p className="theme-muted font-medium text-[9px] sm:text-xs md:text-lg tracking-widest uppercase md:mt-1">Professional Issue Management</p>
               </div>
             </div>
             {decodedToken?.user?.teamId && (
-              <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+              <div className="flex items-center gap-2 sm:gap-4 ml-auto justify-end mt-2 sm:mt-0 w-full sm:w-auto border-t border-slate-700/20 sm:border-none pt-4 sm:pt-0">
 
                 {/* Theme Toggle Button */}
                 <button
@@ -403,7 +401,7 @@ function Dashboard({ token, handleLogout }) {
 
                   {/* Notifications Dropdown */}
                   {showNotifications && (
-                    <div className="absolute right-0 sm:-right-4 mt-3 w-[85vw] max-w-[320px] sm:w-80 theme-panel backdrop-blur-3xl rounded-2xl shadow-2xl overflow-hidden z-50 animate-[scale-in_0.2s_ease-out] origin-top-right">
+                    <div className="absolute left-[-24px] sm:left-auto right-auto sm:-right-4 mt-3 w-[min(85vw,320px)] theme-panel backdrop-blur-3xl rounded-2xl shadow-2xl overflow-hidden z-[100] animate-[scale-in_0.2s_ease-out] origin-top-left sm:origin-top-right">
                       <div className="bg-black/20 p-4 border-b theme-border flex justify-between items-center">
                         <h4 className="font-bold theme-text">Notifications</h4>
                         {unreadCount > 0 && <span className="bg-indigo-500/20 text-indigo-500 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-indigo-500/30 shrink-0 ml-2">{unreadCount} New</span>}
