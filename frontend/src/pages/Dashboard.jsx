@@ -10,6 +10,7 @@ function Dashboard({ token, handleLogout }) {
   const [tickets, setTickets] = useState([]);
   const [newTicket, setNewTicket] = useState({ title: '', description: '', priority: 'Low' });
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Extract User info from Token
   const decodedToken = jwtDecode(token);
@@ -84,20 +85,35 @@ function Dashboard({ token, handleLogout }) {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col md:flex-row">
-      <Sidebar token={token} handleLogout={handleLogout} />
+      <Sidebar
+        token={token}
+        handleLogout={handleLogout}
+        isOpen={isSidebarOpen}
+        toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+      />
 
       <main className="flex-1 p-4 md:p-8 h-screen overflow-y-auto">
         <div className="w-full max-w-6xl mx-auto">
 
           {/* Header Section */}
-          <header className="mb-10 text-center md:text-left flex flex-col md:flex-row justify-between items-center bg-white p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-3">
-                <span className="text-blue-600">Nexus</span> Tracker
-              </h1>
-              <div className="flex flex-col md:flex-row md:items-center gap-3">
-                <p className="text-slate-500 font-medium text-lg tracking-wide">Professional Bug & Issue Management</p>
+          <header className="mb-10 flex flex-col md:flex-row justify-between items-center bg-white p-6 md:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
+            <div className="w-full md:w-auto flex justify-between items-center mb-6 md:mb-0">
+              <div>
+                <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-2 md:mb-3">
+                  <span className="text-blue-600">Nexus</span> Tracker
+                </h1>
+                <p className="text-slate-500 font-medium text-sm md:text-lg tracking-wide">Professional Bug & Issue Management</p>
               </div>
+
+              {/* Mobile Sidebar Toggle Button */}
+              <button
+                className="md:hidden p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors"
+                onClick={() => setIsSidebarOpen(true)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+              </button>
             </div>
             {decodedToken?.user?.teamId && (
               <div className="mt-6 md:mt-0 flex items-center gap-4">
@@ -139,9 +155,9 @@ function Dashboard({ token, handleLogout }) {
                     </p>
 
                     {/* Progress Bar */}
-                    <div className="w-full bg-slate-100 rounded-full h-3 relative overflow-hidden">
+                    <div className="w-full bg-slate-100 rounded-full h-3 relative overflow-hidden shadow-inner">
                       <div
-                        className="bg-emerald-500 h-3 rounded-full transition-all duration-1000"
+                        className="bg-gradient-to-r from-emerald-400 to-emerald-500 h-3 rounded-full transition-all duration-1000"
                         style={{ width: `${(resolvedCount / (tickets.length || 1)) * 100}%` }}
                       ></div>
                     </div>
@@ -217,7 +233,7 @@ function Dashboard({ token, handleLogout }) {
                         </select>
                       </div>
 
-                      <button type="submit" className="mt-2 w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
+                      <button type="submit" className="mt-2 w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-600/30 hover:bg-blue-500 hover:shadow-blue-600/50 hover:-translate-y-1 active:translate-y-0 transition-all duration-300">
                         Create Ticket
                       </button>
                     </div>
@@ -251,10 +267,10 @@ function Dashboard({ token, handleLogout }) {
                       </div>
                     ) : (
                       filteredTickets.map(ticket => (
-                        <div key={ticket._id} className="group bg-white p-7 rounded-[2rem] shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition-all duration-300 relative overflow-hidden flex flex-col h-full">
+                        <div key={ticket._id} className="group bg-white p-7 rounded-[2rem] shadow-sm border border-slate-200 hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-300 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden flex flex-col h-full">
 
                           {/* Status Indicator */}
-                          <div className={`absolute left-0 top-0 bottom-0 w-1.5 transition-colors ${ticket.status === 'Resolved' ? 'bg-emerald-500' :
+                          <div className={`absolute left-0 top-0 bottom-0 w-2 transition-colors ${ticket.status === 'Resolved' ? 'bg-emerald-500' :
                             ticket.priority === 'High' ? 'bg-red-500' :
                               ticket.priority === 'Medium' ? 'bg-amber-500' : 'bg-blue-400'
                             }`}></div>
@@ -286,14 +302,14 @@ function Dashboard({ token, handleLogout }) {
                               {ticket.status !== 'Resolved' && (
                                 <button
                                   onClick={() => handleUpdate(ticket._id)}
-                                  className="text-emerald-600 bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200"
+                                  className="text-emerald-600 bg-emerald-50 hover:bg-emerald-500 hover:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 shadow-sm hover:shadow-emerald-500/30"
                                 >
                                   Mark Done
                                 </button>
                               )}
                               <button
                                 onClick={() => handleDelete(ticket._id)}
-                                className="text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200"
+                                className="text-red-500 bg-red-50 hover:bg-red-500 hover:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 shadow-sm hover:shadow-red-500/30"
                               >
                                 Delete
                               </button>

@@ -203,12 +203,16 @@ router.get('/team', authMiddleware, async (req, res) => {
             return res.status(404).json({ message: 'Team not found' });
         }
 
+        // Fetch all members of this team
+        const members = await User.find({ team: user.team }).select('username role _id');
+
         // Return team details. If user is Admin, they get to see the invite code.
         const teamData = {
             id: team._id,
             name: team.name,
             code: user.role === 'Admin' ? team.code : null, // Hide code from standard members if preferred
-            admin: team.admin
+            admin: team.admin,
+            members: members
         };
 
         res.json(teamData);

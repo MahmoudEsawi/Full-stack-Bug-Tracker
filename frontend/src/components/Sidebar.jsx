@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-function Sidebar({ token, handleLogout }) {
+function Sidebar({ token, handleLogout, isOpen, toggleSidebar }) {
     const [teamName, setTeamName] = useState('');
     const [joinCode, setJoinCode] = useState('');
     const [loading, setLoading] = useState(false);
@@ -73,119 +73,165 @@ function Sidebar({ token, handleLogout }) {
     };
 
     return (
-        <aside className="w-full md:w-80 bg-slate-900 border-r border-slate-800 flex flex-col h-full text-slate-300 md:h-screen sticky top-0 md:rounded-r-[2rem] shadow-2xl p-8 z-50">
-            <div className="mb-10 text-center md:text-left">
-                <h1 className="text-3xl font-black text-white tracking-tight flex items-center gap-2">
-                    <span className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-sm">N</span>
-                    Nexus<span className="text-blue-500 text-lg">v2</span>
-                </h1>
-                <p className="text-slate-500 text-xs mt-2 uppercase tracking-widest font-bold">Workspace Portal</p>
-            </div>
+        <>
+            {/* Mobile Overlay Background */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
+                    onClick={toggleSidebar}
+                ></div>
+            )}
 
-            {!user.teamId ? (
-                <div className="flex-1 overflow-y-auto pr-2 space-y-8 custom-scrollbar">
-                    {/* No Team State */}
-                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
-                        <h3 className="text-white font-bold mb-4 flex items-center gap-2">
-                            <span className="text-xl">🚀</span> Create Workspace
-                        </h3>
-                        <form onSubmit={handleCreateTeam} className="flex flex-col gap-3">
-                            <input
-                                type="text" required placeholder="Enter Workspace Name"
-                                className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-slate-500"
-                                value={teamName} onChange={e => setTeamName(e.target.value)}
-                            />
-                            <button disabled={loading} className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-500 transition-colors text-sm">
-                                {loading ? 'Processing...' : 'Create & Become Admin'}
-                            </button>
-                        </form>
-                    </div>
+            <aside className={`fixed md:sticky top-0 left-0 w-80 bg-slate-900 border-r border-slate-800 flex flex-col h-screen text-slate-300 md:rounded-r-[2rem] shadow-2xl p-8 z-50 transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
 
-                    <div className="flex items-center gap-4 text-slate-500 text-xs font-bold uppercase w-full">
-                        <div className="h-px bg-slate-700 flex-1"></div>
-                        <span>OR</span>
-                        <div className="h-px bg-slate-700 flex-1"></div>
-                    </div>
+                {/* Mobile Close Button */}
+                <button
+                    onClick={toggleSidebar}
+                    className="md:hidden absolute top-6 right-6 text-slate-400 hover:text-white transition-colors bg-slate-800 p-2 rounded-xl"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
 
-                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
-                        <h3 className="text-white font-bold mb-4 flex items-center gap-2">
-                            <span className="text-xl">🤝</span> Join Existing Team
-                        </h3>
-                        <p className="text-xs text-slate-400 mb-4 leading-relaxed">Ask your Team Admin for the 6-character Unique Invite Code.</p>
-                        <form onSubmit={handleJoinTeam} className="flex flex-col gap-3">
-                            <input
-                                type="text" required placeholder="e.g. A1B2C3" maxLength={6}
-                                className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none placeholder-slate-500 uppercase font-mono tracking-widest text-center"
-                                value={joinCode} onChange={e => setJoinCode(e.target.value)}
-                            />
-                            <button disabled={loading} className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-500 transition-colors text-sm">
-                                {loading ? 'Verifying...' : 'Join Workspace'}
-                            </button>
-                        </form>
-                    </div>
+                <div className="mb-10 text-center md:text-left mt-4 md:mt-0">
+                    <h1 className="text-3xl font-black text-white tracking-tight flex items-center justify-center md:justify-start gap-2">
+                        <span className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-sm shadow-lg shadow-blue-500/30">N</span>
+                        Nexus<span className="text-blue-500 text-lg">v2</span>
+                    </h1>
+                    <p className="text-slate-500 text-xs mt-2 uppercase tracking-widest font-bold">Workspace Portal</p>
                 </div>
-            ) : (
-                <div className="flex-1 flex flex-col justify-between">
-                    {/* Active Team State */}
-                    <div>
-                        <div className="bg-blue-600/10 border border-blue-500/20 p-5 rounded-2xl mb-6 flex flex-col items-center justify-center text-center">
-                            <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-2xl font-black text-white mb-3 shadow-lg shadow-blue-500/30">
-                                {user.username.charAt(0).toUpperCase()}
-                            </div>
-                            <h2 className="text-white font-bold text-lg">{user.username}</h2>
-                            <span className={`mt-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${user.role === 'Admin' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-700 text-slate-300'}`}>
-                                {user.role} Role
-                            </span>
+
+                {!user.teamId ? (
+                    <div className="flex-1 overflow-y-auto pr-2 space-y-8 custom-scrollbar">
+                        {/* No Team State */}
+                        <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                            <h3 className="text-white font-bold mb-4 flex items-center gap-2">
+                                <span className="text-xl">🚀</span> Create Workspace
+                            </h3>
+                            <form onSubmit={handleCreateTeam} className="flex flex-col gap-3">
+                                <input
+                                    type="text" required placeholder="Enter Workspace Name"
+                                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-slate-500"
+                                    value={teamName} onChange={e => setTeamName(e.target.value)}
+                                />
+                                <button disabled={loading} className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-500 transition-colors text-sm">
+                                    {loading ? 'Processing...' : 'Create & Become Admin'}
+                                </button>
+                            </form>
                         </div>
 
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
-                                <span className="text-sm font-medium text-slate-400">Status</span>
-                                <span className="flex items-center gap-2 text-sm font-bold text-emerald-400">
-                                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Online
+                        <div className="flex items-center gap-4 text-slate-500 text-xs font-bold uppercase w-full">
+                            <div className="h-px bg-slate-700 flex-1"></div>
+                            <span>OR</span>
+                            <div className="h-px bg-slate-700 flex-1"></div>
+                        </div>
+
+                        <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                            <h3 className="text-white font-bold mb-4 flex items-center gap-2">
+                                <span className="text-xl">🤝</span> Join Existing Team
+                            </h3>
+                            <p className="text-xs text-slate-400 mb-4 leading-relaxed">Ask your Team Admin for the 6-character Unique Invite Code.</p>
+                            <form onSubmit={handleJoinTeam} className="flex flex-col gap-3">
+                                <input
+                                    type="text" required placeholder="e.g. A1B2C3" maxLength={6}
+                                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none placeholder-slate-500 uppercase font-mono tracking-widest text-center"
+                                    value={joinCode} onChange={e => setJoinCode(e.target.value)}
+                                />
+                                <button disabled={loading} className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-500 transition-colors text-sm">
+                                    {loading ? 'Verifying...' : 'Join Workspace'}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex-1 flex flex-col justify-between">
+                        {/* Active Team State */}
+                        <div>
+                            <div className="bg-blue-600/10 border border-blue-500/20 p-5 rounded-2xl mb-6 flex flex-col items-center justify-center text-center">
+                                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-2xl font-black text-white mb-3 shadow-lg shadow-blue-500/30">
+                                    {user.username.charAt(0).toUpperCase()}
+                                </div>
+                                <h2 className="text-white font-bold text-lg">{user.username}</h2>
+                                <span className={`mt-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${user.role === 'Admin' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-700 text-slate-300'}`}>
+                                    {user.role} Role
                                 </span>
                             </div>
 
-                            {/* Only Admins can see raw invite code concepts */}
-                            {user.role === 'Admin' && (
-                                <div className="p-4 bg-amber-500/10 rounded-xl border border-amber-500/20">
-                                    <span className="block text-xs font-bold text-amber-500 uppercase tracking-wider mb-2">Team Management</span>
-                                    <p className="text-xs text-amber-200/70 mb-3 leading-relaxed">As an Admin, you can invite members to this workspace.</p>
-
-                                    <div className="mb-2">
-                                        <span className="text-[10px] uppercase font-bold text-amber-500/80 tracking-widest pb-1 block">Your Invite Code</span>
-                                    </div>
-                                    <div className="bg-slate-900 border border-amber-500/30 rounded-lg p-3 flex justify-between items-center mb-3 shadow-inner shadow-black/20">
-                                        <span className="font-mono text-amber-400 font-black tracking-widest text-xl">{teamData?.code || "Loading..."}</span>
-                                    </div>
-
-                                    <button
-                                        onClick={handleCopyCode}
-                                        className="w-full bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
-                                    >
-                                        Copy Invite Code
-                                    </button>
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                                    <span className="text-sm font-medium text-slate-400">Status</span>
+                                    <span className="flex items-center gap-2 text-sm font-bold text-emerald-400">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Online
+                                    </span>
                                 </div>
-                            )}
+
+                                {/* Team Members List */}
+                                {teamData?.members && teamData.members.length > 0 && (
+                                    <div className="mt-6 mb-4">
+                                        <div className="flex items-center justify-between mb-3 px-1">
+                                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Team Members</h3>
+                                            <span className="bg-slate-800 text-slate-300 text-[10px] px-2 py-0.5 rounded-full font-bold">{teamData.members.length}</span>
+                                        </div>
+                                        <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
+                                            {teamData.members.map(member => (
+                                                <div key={member._id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/30 hover:bg-slate-700/40 transition-colors">
+                                                    <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-white shadow-sm">
+                                                        {member.username.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-bold text-white truncate">{member.username}</p>
+                                                        <p className={`text-[10px] font-bold uppercase tracking-wider ${member.role === 'Admin' ? 'text-amber-400' : 'text-slate-500'}`}>
+                                                            {member.role}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Only Admins can see raw invite code concepts */}
+                                {user.role === 'Admin' && (
+                                    <div className="p-4 bg-amber-500/10 rounded-xl border border-amber-500/20">
+                                        <span className="block text-xs font-bold text-amber-500 uppercase tracking-wider mb-2">Team Management</span>
+                                        <p className="text-xs text-amber-200/70 mb-3 leading-relaxed">As an Admin, you can invite members to this workspace.</p>
+
+                                        <div className="mb-2">
+                                            <span className="text-[10px] uppercase font-bold text-amber-500/80 tracking-widest pb-1 block">Your Invite Code</span>
+                                        </div>
+                                        <div className="bg-slate-900 border border-amber-500/30 rounded-lg p-3 flex justify-between items-center mb-3 shadow-inner shadow-black/20">
+                                            <span className="font-mono text-amber-400 font-black tracking-widest text-xl">{teamData?.code || "Loading..."}</span>
+                                        </div>
+
+                                        <button
+                                            onClick={handleCopyCode}
+                                            className="w-full bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            Copy Invite Code
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
+                )}
+
+                {/* Footer Area */}
+                <div className="mt-auto pt-8">
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-slate-700 hover:border-red-500/30 py-3 rounded-xl font-bold transition-all text-sm"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                        </svg>
+                        Sign Out
+                    </button>
                 </div>
-            )}
 
-            {/* Footer Area */}
-            <div className="mt-auto pt-8">
-                <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-slate-700 hover:border-red-500/30 py-3 rounded-xl font-bold transition-all text-sm"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-                    </svg>
-                    Sign Out
-                </button>
-            </div>
-
-        </aside>
+            </aside>
+        </>
     );
 }
 
