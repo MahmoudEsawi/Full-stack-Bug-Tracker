@@ -21,11 +21,14 @@ function Sidebar({ token, handleLogout }) {
         if (user.teamId) {
             fetchTeamData();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user.teamId]);
 
     const fetchTeamData = async () => {
         try {
+            console.log("Fetching team data... Token:", token.substring(0, 10));
             const res = await axios.get('/api/auth/team', authConfig);
+            console.log("Fetched team data:", res.data);
             setTeamData(res.data);
         } catch (error) {
             console.error("Error fetching team data:", error);
@@ -144,13 +147,16 @@ function Sidebar({ token, handleLogout }) {
                             </div>
 
                             {/* Only Admins can see raw invite code concepts */}
-                            {user.role === 'Admin' && teamData?.code && (
+                            {user.role === 'Admin' && (
                                 <div className="p-4 bg-amber-500/10 rounded-xl border border-amber-500/20">
                                     <span className="block text-xs font-bold text-amber-500 uppercase tracking-wider mb-2">Team Management</span>
                                     <p className="text-xs text-amber-200/70 mb-3 leading-relaxed">As an Admin, you can invite members to this workspace.</p>
 
-                                    <div className="bg-slate-900 border border-amber-500/30 rounded-lg p-3 flex justify-between items-center mb-3">
-                                        <span className="font-mono text-amber-500 font-bold tracking-widest text-lg">{teamData.code}</span>
+                                    <div className="mb-2">
+                                        <span className="text-[10px] uppercase font-bold text-amber-500/80 tracking-widest pb-1 block">Your Invite Code</span>
+                                    </div>
+                                    <div className="bg-slate-900 border border-amber-500/30 rounded-lg p-3 flex justify-between items-center mb-3 shadow-inner shadow-black/20">
+                                        <span className="font-mono text-amber-400 font-black tracking-widest text-xl">{teamData?.code || "Loading..."}</span>
                                     </div>
 
                                     <button

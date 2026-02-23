@@ -33,7 +33,8 @@ router.post('/register', async (req, res) => {
             user: {
                 id: user.id,
                 username: user.username,
-                teamCode: user.teamCode
+                teamId: user.team,
+                role: user.role
             }
         };
 
@@ -182,6 +183,35 @@ router.post('/team/join', authMiddleware, async (req, res) => {
             res.json({ token, team });
         });
 
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   GET /api/auth/team
+// @desc    Get the user's current team details (including invite code if Admin)
+router.get('/team', authMiddleware, async (req, res) => {
+    try {
+        let user = await User.findById(req.user.id);
+        if (!user || !user.team) {
+            return res.status(404).json({ message: 'No team found' });
+        }
+
+        const team = await Team.findById(user.team);
+        if (!team) {
+            return res.status(404).json({ message: 'Team not found' });
+        }
+
+        // Return team details. If user is Admin, they get to see the invite code.
+        const teamData = {
+            id: team._id,
+            name: team.name,
+            code: user.role === 'Admin' ? team.code : null, // Hide code from standard members if preferred
+            admin: team.admin
+        };
+
+        res.json(teamData);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
