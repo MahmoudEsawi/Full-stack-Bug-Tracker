@@ -5,7 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 const API_URL = '/api/auth/register';
 
 function Register({ setToken }) {
-    const [formData, setFormData] = useState({ username: '', password: '', teamCode: '' });
+    const [formData, setFormData] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -35,17 +35,6 @@ function Register({ setToken }) {
                 {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-6 text-sm font-semibold border border-red-100 text-center">{error}</div>}
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                    <div>
-                        <label className="block text-sm font-bold text-slate-600 mb-2 ml-1">Team Code</label>
-                        <input
-                            type="text"
-                            required
-                            placeholder="e.g., ALPHA_TEAM_1"
-                            className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-slate-800 transition-all font-medium uppercase"
-                            value={formData.teamCode}
-                            onChange={e => setFormData({ ...formData, teamCode: e.target.value })}
-                        />
-                    </div>
                     <div>
                         <label className="block text-sm font-bold text-slate-600 mb-2 ml-1">Choose Username</label>
                         <input
