@@ -27,7 +27,7 @@ function Login({ setToken }) {
             <div className="bg-white p-10 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 w-full max-w-md">
                 <div className="text-center mb-10">
                     <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-2">
-                        <span className="text-blue-600">Nexus</span> Tracker
+                        <span className="text-blue-600">SyncIssue</span>
                     </h1>
                     <p className="text-slate-500 font-medium">Welcome back! Please login to your account.</p>
                 </div>

@@ -357,7 +357,7 @@ function Dashboard({ token, handleLogout }) {
               )}
               <div>
                 <h1 className="text-xl sm:text-3xl md:text-5xl font-black theme-text tracking-tight mb-0.5 md:mb-3">
-                  <span className="text-indigo-500 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-fuchsia-500">Nexus</span> Tracker
+                  <span className="text-indigo-500 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-fuchsia-500">SyncIssue</span>
                 </h1>
                 <p className="theme-muted font-medium text-[9px] sm:text-xs md:text-lg tracking-widest uppercase md:mt-1">Professional Issue Management</p>
               </div>
