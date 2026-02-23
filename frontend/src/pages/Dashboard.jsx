@@ -402,12 +402,12 @@ function Dashboard({ token, handleLogout }) {
 
                   {/* Notifications Dropdown */}
                   {showNotifications && (
-                    <div className="absolute right-0 sm:-right-4 mt-3 w-[280px] sm:w-80 max-w-[90vw] theme-panel backdrop-blur-3xl rounded-2xl shadow-2xl overflow-hidden z-50 animate-[scale-in_0.2s_ease-out] origin-top-right">
+                    <div className="absolute right-0 sm:-right-4 mt-3 w-[85vw] max-w-[320px] sm:w-80 theme-panel backdrop-blur-3xl rounded-2xl shadow-2xl overflow-hidden z-50 animate-[scale-in_0.2s_ease-out] origin-top-right">
                       <div className="bg-black/20 p-4 border-b theme-border flex justify-between items-center">
                         <h4 className="font-bold theme-text">Notifications</h4>
-                        {unreadCount > 0 && <span className="bg-indigo-500/20 text-indigo-500 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-indigo-500/30">{unreadCount} New</span>}
+                        {unreadCount > 0 && <span className="bg-indigo-500/20 text-indigo-500 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-indigo-500/30 shrink-0 ml-2">{unreadCount} New</span>}
                       </div>
-                      <div className="max-h-80 overflow-y-auto custom-scrollbar">
+                      <div className="max-h-[60vh] sm:max-h-80 overflow-y-auto custom-scrollbar">
                         {notifications.length === 0 ? (
                           <div className="p-6 text-center theme-muted text-sm font-medium">No inner peace is better than an empty inbox. 🍃</div>
                         ) : (
@@ -415,12 +415,13 @@ function Dashboard({ token, handleLogout }) {
                             <div
                               key={note._id}
                               onClick={() => handleMarkNotificationRead(note._id, note.relatedTicket?._id)}
-                              className={`p-4 border-b theme-border theme-hover cursor-pointer transition-colors ${!note.isRead ? 'bg-indigo-500/10' : 'opacity-60'}`}
+                              className={`p-4 border-b theme-border theme-hover cursor-pointer transition-colors flex flex-col gap-2 ${!note.isRead ? 'bg-indigo-500/10' : 'opacity-60'}`}
                             >
-                              <p className={`text-sm ${!note.isRead ? 'font-bold theme-text' : 'font-medium theme-muted'}`}>
+                              <p className={`text-sm leading-relaxed ${!note.isRead ? 'font-bold theme-text' : 'font-medium theme-muted'}`}>
                                 {note.message}
                               </p>
-                              <p className="text-[10px] font-bold theme-muted mt-2 uppercase tracking-wider opacity-70">
+                              <p className="text-[10px] font-bold theme-muted uppercase tracking-wider opacity-70 flex items-center gap-1.5 shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3 h-3"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                 {format(new Date(note.createdAt), 'MMM d, h:mm a')}
                               </p>
                             </div>
@@ -599,27 +600,27 @@ function Dashboard({ token, handleLogout }) {
 
           {/* Ticket Details & Comments Modal */}
           {selectedTicket && (
-            <div className="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 md:p-8 transition-colors">
-              <div className="theme-panel rounded-[2rem] shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
+            <div className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-0 md:p-6 lg:p-10 transition-colors">
+              <div className="theme-panel w-full md:rounded-[2rem] shadow-2xl max-w-6xl h-[100dvh] md:h-auto md:max-h-[90vh] flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
 
                 {/* Modal Header */}
-                <div className="p-6 theme-border border-b flex justify-between items-center theme-bg shrink-0">
-                  <h3 className="text-xl font-black theme-text flex items-center gap-3">
-                    <span className="bg-indigo-500/20 border border-indigo-500/30 p-2 rounded-xl text-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                <div className="p-4 md:p-6 theme-border border-b flex justify-between items-center theme-bg shrink-0 gap-4">
+                  <h3 className="text-lg md:text-xl font-black theme-text flex items-center gap-3 truncate">
+                    <span className="bg-indigo-500/20 border border-indigo-500/30 p-2 rounded-xl text-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.2)] shrink-0 hidden sm:block">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </span>
-                    Ticket Details: {selectedTicket.title}
+                    <span className="truncate">{selectedTicket.title}</span>
                   </h3>
-                  <button onClick={() => setSelectedTicket(null)} className="theme-muted hover:text-red-500 hover:bg-red-500/10 p-2 rounded-xl transition-colors">
+                  <button onClick={() => setSelectedTicket(null)} className="shrink-0 theme-muted hover:text-red-500 hover:bg-red-500/10 p-2 rounded-xl transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
 
-                {/* Modal Body - 2 Columns */}
-                <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0 relative">
+                {/* Modal Body - 2 Columns (Stacks on Mobile) */}
+                <div className="flex-1 overflow-y-auto md:overflow-hidden flex flex-col md:flex-row min-h-0 relative bg-black/10">
 
                   {/* Left Column: Timeline & Meta */}
-                  <div className="w-full md:w-1/3 border-r theme-border theme-bg p-6 md:p-8 overflow-y-auto custom-scrollbar">
+                  <div className="w-full md:w-[40%] xl:w-1/3 border-b md:border-b-0 md:border-r theme-border theme-bg p-5 md:p-8 shrink-0 md:shrink overflow-y-visible md:overflow-y-auto custom-scrollbar">
                     <div className="mb-8">
                       <h4 className="text-sm font-bold theme-muted uppercase tracking-widest mb-2">Description</h4>
                       <p className="theme-text font-medium leading-relaxed theme-input p-4 rounded-xl">{selectedTicket.description}</p>
@@ -658,7 +659,7 @@ function Dashboard({ token, handleLogout }) {
                   </div>
 
                   {/* Right Column: Comments Thread */}
-                  <div className="w-full md:w-2/3 flex flex-col bg-transparent overflow-hidden min-h-[400px]">
+                  <div className="w-full md:w-[60%] xl:w-2/3 flex flex-col bg-transparent overflow-hidden min-h-[50vh] md:min-h-0 expand">
                     <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar space-y-6 flex flex-col">
                       {(!selectedTicket.comments || selectedTicket.comments.length === 0) ? (
                         <div className="flex-1 flex flex-col items-center justify-center text-slate-500 opacity-60 m-auto">
