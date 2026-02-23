@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = 'https://full-stack-bug-tracker.onrender.com/api/tickets';
+
 function App() {
   const [tickets, setTickets] = useState([]);
   const [newTicket, setNewTicket] = useState({ title: '', description: '', priority: 'Low' });
@@ -12,7 +14,7 @@ function App() {
 
   const fetchTickets = async () => {
     try {
-      const res = await axios.get('https://full-stack-bug-tracker.onrender.com/api/tickets');
+      const res = await axios.get(API_URL);
       setTickets(res.data);
     } catch (error) {
       console.error("Error fetching tickets:", error);
@@ -23,7 +25,7 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('https://full-stack-bug-tracker.onrender.com/api/tickets', newTicket);
+      await axios.post(API_URL, newTicket);
       setNewTicket({ title: '', description: '', priority: 'Low' }); // تفريغ الخانات
       fetchTickets(); // تحديث الشاشة عشان تطلع التذكرة الجديدة
     } catch (error) {
@@ -34,7 +36,7 @@ function App() {
   // تحديث حالة التذكرة لـ Resolved
   const handleUpdate = async (id) => {
     try {
-      await axios.put(`https://full-stack-bug-tracker.onrender.com/api/tickets/${id}`, { status: 'Resolved' });
+      await axios.put(`${API_URL}/${id}`, { status: 'Resolved' });
       fetchTickets();
     } catch (error) {
       console.error("Error updating ticket:", error);
@@ -44,7 +46,7 @@ function App() {
   // حذف التذكرة
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`https://full-stack-bug-tracker.onrender.com/api/tickets/${id}`);
+      await axios.delete(`${API_URL}/${id}`);
       fetchTickets();
     } catch (error) {
       console.error("Error deleting ticket:", error);
