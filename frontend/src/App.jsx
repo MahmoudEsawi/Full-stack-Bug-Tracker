@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 const API_URL = 'https://full-stack-bug-tracker.onrender.com/api/tickets';
 
@@ -60,6 +61,17 @@ function App() {
     ticket.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // --- Dashboard Data Setup ---
+  const resolvedCount = tickets.filter(t => t.status === 'Resolved').length;
+  const openCount = tickets.length - resolvedCount;
+
+  const chartData = [
+    { name: 'Active Bugs', value: openCount },
+    { name: 'Resolved', value: resolvedCount },
+  ];
+
+  const COLORS = ['#ef4444', '#22c55e']; // Red for active, Green for resolved
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-black p-4 md:p-8 font-sans text-gray-100 flex justify-center">
       <div className="w-full max-w-5xl">
@@ -79,10 +91,61 @@ function App() {
             </div>
             <div className="bg-white/10 px-6 py-3 rounded-2xl border border-white/10 shadow-inner backdrop-blur-sm">
               <span className="block text-xs text-green-400 uppercase font-bold tracking-wider">Resolved</span>
-              <span className="text-2xl font-black text-white">{tickets.filter(t => t.status === 'Resolved').length}</span>
+              <span className="text-2xl font-black text-white">{resolvedCount}</span>
             </div>
           </div>
         </header>
+
+        {/* --- Dashboard / Charts Section --- */}
+        {tickets.length > 0 && (
+          <div className="mb-10 bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-3xl shadow-xl flex flex-col md:flex-row items-center gap-8 hover:bg-white/10 transition duration-500">
+            <div className="w-full md:w-1/2">
+              <h2 className="text-2xl font-extrabold mb-2 text-white flex items-center gap-2">
+                <span className="bg-blue-500 w-2 h-8 rounded-full"></span> System Health
+              </h2>
+              <p className="text-gray-300 leading-relaxed mb-4">
+                Track your bug resolution rate in real-time. Currently, you have <strong className="text-white">{openCount}</strong> active issues out of <strong className="text-white">{tickets.length}</strong> total reported bugs.
+              </p>
+
+              {/* Progress Bar Alternative for Mobile/Quick view */}
+              <div className="w-full bg-gray-700/50 rounded-full h-4 relative overflow-hidden">
+                <div
+                  className="bg-green-500 h-4 rounded-full shadow-[0_0_10px_#22c55e] transition-all duration-1000"
+                  style={{ width: `${(resolvedCount / tickets.length) * 100}%` }}
+                ></div>
+              </div>
+              <p className="text-right text-xs mt-2 text-gray-400 font-bold">
+                {Math.round((resolvedCount / tickets.length) * 100)}% Resolved
+              </p>
+            </div>
+
+            <div className="w-full md:w-1/2 h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={5}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
+                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ color: '#fff' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Form */}
