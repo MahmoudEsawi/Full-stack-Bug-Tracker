@@ -4,21 +4,38 @@
   --font-sans: "Outfit", sans-serif;
 }
 
+@layer base {
+  :root {
+    --bg-app: #030308;
+    --bg-panel: rgba(17, 25, 40, 0.5);
+    --bg-input: #0b0f19;
+    --bg-hover: rgba(30, 41, 59, 0.8);
+    --border-dim: rgba(255, 255, 255, 0.08);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --shadow-glow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  body.light {
+    --bg-app: #f4f7f6;
+    --bg-panel: rgba(255, 255, 255, 0.85);
+    --bg-input: #ffffff;
+    --bg-hover: rgba(241, 245, 249, 1);
+    --border-dim: rgba(0, 0, 0, 0.08);
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --shadow-glow: 0 10px 40px rgba(0, 0, 0, 0.03);
+  }
+}
+
 body {
   font-family: var(--font-sans);
-  @apply transition-colors duration-300;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  @apply transition-colors duration-500 ease-in-out;
 }
 
-body.light {
-  background-color: #f8fafc;
-  color: #0f172a;
-}
-
-body:not(.light) {
-  background-color: #050511;
-  color: #e2e8f0;
-}
-
+/* Base custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -28,24 +45,13 @@ body:not(.light) {
   background: transparent;
 }
 
-/* Dark custom scrollbar */
-body:not(.light) .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #334155;
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border-dim);
   border-radius: 10px;
 }
 
-body:not(.light) .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
-
-/* Light custom scrollbar */
-body.light .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 10px;
-}
-
-body.light .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }
 
 @keyframes scaleIn {
@@ -72,84 +78,116 @@ body.light .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   }
 }
 
-.animate-\\[scale-in_0\\.2s_ease-out\\] {
+.animate-\[scale-in_0\.2s_ease-out\] {
   animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Glass panel */
-.glass-panel {
-  background: rgba(17, 25, 40, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Base custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-body.light .glass-panel {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border-dim);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Dynamic Glass panel */
+.glass-panel {
+  background: var(--bg-panel);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-dim);
+  box-shadow: var(--shadow-glow);
+  transition: all 0.3s ease;
 }
 
 .glass-card {
-  background: rgba(22, 32, 50, 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-input);
+  border: 1px solid var(--border-dim);
+  transition: all 0.3s ease;
 }
 
-body.light .glass-card {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+/* Unified Theme Colors for Components */
+.theme-bg {
+  background-color: var(--bg-app);
+}
+
+.theme-panel {
+  background-color: var(--bg-panel);
+  border-color: var(--border-dim);
+}
+
+.theme-input {
+  background-color: var(--bg-input);
+  border-color: var(--border-dim);
+  color: var(--text-main);
+}
+
+.theme-text {
+  color: var(--text-main);
+}
+
+.theme-muted {
+  color: var(--text-muted);
+}
+
+.theme-border {
+  border-color: var(--border-dim);
+}
+
+.theme-hover:hover {
+  background-color: var(--bg-hover);
 }
 
 /* --- Global Light Mode Overrides for Hardcoded Dark Tailwind Classes --- */
+/* We will systematically strip these out of the components, but this ensures a flawless light mode regardless. */
+body.light [class*="bg-[#050511]"] {
+  background-color: var(--bg-input) !important;
+  border-color: var(--border-dim) !important;
+  color: var(--text-main) !important;
+}
+
+body.light [class*="text-slate-200"],
+body.light [class*="text-white"],
+body.light [class*="text-slate-300"] {
+  color: var(--text-main) !important;
+}
+
+body.light [class*="text-slate-400"],
+body.light [class*="text-slate-500"] {
+  color: var(--text-muted) !important;
+}
+
+body.light [class*="bg-slate-900"],
+body.light [class*="bg-slate-800"] {
+  background-color: var(--bg-hover) !important;
+}
+
+body.light [class*="border-slate-700"],
+body.light [class*="border-slate-800"] {
+  border-color: var(--border-dim) !important;
+}
+
 body.light h1,
 body.light h2,
 body.light h3,
 body.light h4,
 body.light h5,
 body.light h6 {
-  color: #0f172a !important;
-}
-
-body.light .text-white,
-body.light .text-slate-200,
-body.light .text-slate-300 {
-  color: #334155 !important;
-}
-
-body.light .text-slate-400,
-body.light .text-slate-500 {
-  color: #64748b !important;
-}
-
-body.light .bg-\\[\\#050511\\] {
-  background-color: #f1f5f9 !important;
-}
-
-body.light .bg-slate-900\\/50,
-body.light .bg-slate-800\\/50,
-body.light .bg-slate-900,
-body.light .bg-slate-800\\/30,
-body.light .bg-slate-900\\/30,
-body.light .bg-slate-900\\/40,
-body.light .bg-slate-800\\/40 {
-  background-color: rgba(255, 255, 255, 0.5) !important;
-}
-
-body.light .bg-slate-800 {
-  background-color: rgba(255, 255, 255, 0.8) !important;
-}
-
-body.light .border-slate-700,
-body.light .border-slate-700\\/50,
-body.light .border-slate-800,
-body.light .border-slate-800\\/50,
-body.light .border-slate-800\\/60 {
-  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: var(--text-main) !important;
 }
 
 body.light .glass-panel,
 body.light .bg-transparent {
-  color: #1e293b;
+  color: var(--text-main);
 }

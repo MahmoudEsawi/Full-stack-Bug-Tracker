@@ -315,10 +315,10 @@ function Dashboard({ token, handleLogout }) {
   );
 
   return (
-    <div className="min-h-screen bg-[#050511] font-sans text-slate-200 flex flex-col md:flex-row relative overflow-hidden transition-colors duration-300">
+    <div className="min-h-screen theme-bg font-sans theme-text flex flex-col md:flex-row relative overflow-hidden transition-colors duration-500">
       {/* Background Ambient Glows */}
-      <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none transition-opacity"></div>
-      <div className="absolute bottom-[20%] right-[-10%] w-[500px] h-[500px] bg-fuchsia-600/5 blur-[100px] rounded-full pointer-events-none transition-opacity"></div>
+      <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full pointer-events-none transition-opacity" style={{ background: 'var(--ambient-glow-1)', filter: 'blur(120px)' }}></div>
+      <div className="absolute bottom-[20%] right-[-10%] w-[500px] h-[500px] rounded-full pointer-events-none transition-opacity" style={{ background: 'var(--ambient-glow-2)', filter: 'blur(100px)' }}></div>
 
       <Sidebar
         token={token}
@@ -344,15 +344,15 @@ function Dashboard({ token, handleLogout }) {
           <header className="mb-10 flex flex-col md:flex-row justify-between items-center glass-panel p-6 md:p-8 rounded-[2rem] shadow-2xl shadow-black/20">
             <div className="w-full md:w-auto flex justify-between items-center mb-6 md:mb-0">
               <div>
-                <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-2 md:mb-3">
+                <h1 className="text-3xl md:text-5xl font-black theme-text tracking-tight mb-2 md:mb-3">
                   <span className="text-indigo-500 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-fuchsia-500">Nexus</span> Tracker
                 </h1>
-                <p className="text-slate-400 font-medium text-sm md:text-lg tracking-wide uppercase text-[10px] tracking-widest mt-1">Professional Issue Management</p>
+                <p className="theme-muted font-medium text-sm md:text-lg tracking-wide uppercase text-[10px] tracking-widest mt-1">Professional Issue Management</p>
               </div>
 
               {/* Sidebar Toggle Button */}
               <button
-                className={`${isSidebarOpen ? 'hidden' : 'block'} p-2 rounded-xl bg-slate-800/50 border border-slate-700 text-slate-300 hover:bg-slate-800 transition-colors`}
+                className={`${isSidebarOpen ? 'hidden' : 'block'} p-2 rounded-xl theme-panel theme-muted theme-hover transition-colors`}
                 onClick={() => setIsSidebarOpen(true)}
                 title="Open Sidebar"
               >
@@ -367,15 +367,15 @@ function Dashboard({ token, handleLogout }) {
                 {/* Theme Toggle Button */}
                 <button
                   onClick={toggleTheme}
-                  className="p-3 bg-slate-800/50 border border-slate-700 rounded-2xl text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition-colors relative"
+                  className="p-3 theme-panel rounded-2xl theme-muted theme-hover transition-colors relative"
                   title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
                 >
                   {theme === 'dark' ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 hover:text-amber-400">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
                     </svg>
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 hover:text-indigo-500">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
                     </svg>
                   )}
@@ -385,9 +385,9 @@ function Dashboard({ token, handleLogout }) {
                 <div className="relative">
                   <button
                     onClick={() => setShowNotifications(!showNotifications)}
-                    className="p-3 bg-slate-800/50 border border-slate-700 rounded-2xl text-slate-400 hover:text-indigo-400 hover:bg-slate-800 transition-colors relative"
+                    className="p-3 theme-panel rounded-2xl theme-muted theme-hover transition-colors relative"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 hover:text-indigo-500">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                     </svg>
                     {unreadCount > 0 && (
@@ -400,25 +400,25 @@ function Dashboard({ token, handleLogout }) {
 
                   {/* Notifications Dropdown */}
                   {showNotifications && (
-                    <div className="absolute right-0 mt-3 w-80 glass-panel rounded-2xl shadow-2xl overflow-hidden z-50 animate-[scale-in_0.2s_ease-out] origin-top-right">
-                      <div className="bg-slate-900/50 p-4 border-b border-slate-700 flex justify-between items-center">
-                        <h4 className="font-bold text-slate-200">Notifications</h4>
-                        {unreadCount > 0 && <span className="bg-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-indigo-500/30">{unreadCount} New</span>}
+                    <div className="absolute right-0 mt-3 w-80 theme-panel backdrop-blur-3xl rounded-2xl shadow-2xl overflow-hidden z-50 animate-[scale-in_0.2s_ease-out] origin-top-right">
+                      <div className="bg-black/20 p-4 border-b theme-border flex justify-between items-center">
+                        <h4 className="font-bold theme-text">Notifications</h4>
+                        {unreadCount > 0 && <span className="bg-indigo-500/20 text-indigo-500 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-indigo-500/30">{unreadCount} New</span>}
                       </div>
                       <div className="max-h-80 overflow-y-auto custom-scrollbar">
                         {notifications.length === 0 ? (
-                          <div className="p-6 text-center text-slate-500 text-sm font-medium">No inner peace is better than an empty inbox. 🍃</div>
+                          <div className="p-6 text-center theme-muted text-sm font-medium">No inner peace is better than an empty inbox. 🍃</div>
                         ) : (
                           notifications.map(note => (
                             <div
                               key={note._id}
                               onClick={() => handleMarkNotificationRead(note._id, note.relatedTicket?._id)}
-                              className={`p-4 border-b border-slate-800/50 hover:bg-slate-800/50 cursor-pointer transition-colors ${!note.isRead ? 'bg-indigo-500/10' : 'opacity-60'}`}
+                              className={`p-4 border-b theme-border theme-hover cursor-pointer transition-colors ${!note.isRead ? 'bg-indigo-500/10' : 'opacity-60'}`}
                             >
-                              <p className={`text-sm ${!note.isRead ? 'font-bold text-slate-200' : 'font-medium text-slate-400'}`}>
+                              <p className={`text-sm ${!note.isRead ? 'font-bold theme-text' : 'font-medium theme-muted'}`}>
                                 {note.message}
                               </p>
-                              <p className="text-[10px] font-bold text-slate-500 mt-2 uppercase tracking-wider">
+                              <p className="text-[10px] font-bold theme-muted mt-2 uppercase tracking-wider opacity-70">
                                 {format(new Date(note.createdAt), 'MMM d, h:mm a')}
                               </p>
                             </div>
@@ -429,13 +429,13 @@ function Dashboard({ token, handleLogout }) {
                   )}
                 </div>
 
-                <div className="bg-slate-800/50 px-6 py-4 rounded-2xl border border-slate-700 shadow-sm hidden sm:block">
-                  <span className="block text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Total Issues</span>
-                  <span className="text-2xl font-black text-white">{tickets.length}</span>
+                <div className="theme-panel px-6 py-4 rounded-2xl shadow-sm hidden sm:block">
+                  <span className="block text-xs theme-muted uppercase font-bold tracking-wider mb-1">Total Issues</span>
+                  <span className="text-2xl font-black theme-text">{tickets.length}</span>
                 </div>
                 <div className="bg-emerald-500/10 px-6 py-4 rounded-2xl border border-emerald-500/20 shadow-sm hidden md:block">
                   <span className="block text-xs text-emerald-500 uppercase font-bold tracking-wider mb-1">Resolved</span>
-                  <span className="text-2xl font-black text-emerald-400">{resolvedCount}</span>
+                  <span className="text-2xl font-black text-emerald-500 drop-shadow-[0_0_8px_rgba(16,185,129,0.3)]">{resolvedCount}</span>
                 </div>
               </div>
             )}
@@ -443,13 +443,13 @@ function Dashboard({ token, handleLogout }) {
 
           {/* State: No Team */}
           {!decodedToken?.user?.teamId ? (
-            <div className="glass-panel p-16 rounded-[2rem] shadow-2xl shadow-black/20 text-center relative overflow-hidden">
+            <div className="theme-panel p-16 rounded-[2rem] shadow-2xl shadow-black/20 text-center relative overflow-hidden backdrop-blur-3xl">
               <div className="absolute top-0 right-0 p-32 bg-indigo-500/10 blur-[100px] rounded-full"></div>
               <div className="w-24 h-24 bg-indigo-500/10 border border-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-6 relative z-10 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
-                <span className="text-4xl text-indigo-400">❖</span>
+                <span className="text-4xl text-indigo-500">❖</span>
               </div>
-              <h2 className="text-3xl font-black text-white mb-4 relative z-10">Welcome to <span className="text-indigo-400">Nexus</span></h2>
-              <p className="text-slate-400 font-medium max-w-lg mx-auto leading-relaxed relative z-10">
+              <h2 className="text-3xl font-black theme-text mb-4 relative z-10">Welcome to <span className="text-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.4)]">Nexus</span></h2>
+              <p className="theme-muted font-medium max-w-lg mx-auto leading-relaxed relative z-10">
                 To get started, please create a new workspace or join an existing one using the options in the sidebar.
               </p>
             </div>
@@ -510,25 +510,25 @@ function Dashboard({ token, handleLogout }) {
               {/* Report New Ticket Bar */}
               <div className="mb-10 relative z-20">
                 <div className="mb-5 flex items-center gap-3 px-2">
-                  <h3 className="text-xl md:text-2xl font-black text-white flex items-center gap-2">
+                  <h3 className="text-xl md:text-2xl font-black theme-text flex items-center gap-2">
                     <span className="text-indigo-500">❖</span>
                     {projects.find(p => p._id === selectedProjectId)?.name || 'Select a Project'}
                   </h3>
-                  <span className="bg-slate-800 border border-slate-700 text-slate-400 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest hidden sm:inline-block shadow-[0_4px_10px_rgba(0,0,0,0.3)]">Active Workspace</span>
+                  <span className="theme-panel theme-muted border-none text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest hidden sm:inline-block shadow-[0_4px_10px_rgba(0,0,0,0.3)]">Active Workspace</span>
                 </div>
-                <form onSubmit={handleSubmit} className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 p-6 rounded-2xl shadow-xl flex flex-col lg:flex-row gap-5 items-end">
+                <form onSubmit={handleSubmit} className="theme-panel backdrop-blur-xl p-6 rounded-2xl shadow-xl flex flex-col lg:flex-row gap-5 items-end">
                   <div className="w-full lg:flex-1">
-                    <label className="block text-xs font-bold text-slate-400 tracking-wider uppercase mb-2 ml-1">Issue Title</label>
-                    <input type="text" placeholder="e.g. Broken links..." required className="w-full p-3.5 bg-[#050511] border border-slate-700/80 text-white placeholder-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium text-sm transition-all shadow-inner" value={newTicket.title} onChange={e => setNewTicket({ ...newTicket, title: e.target.value })} />
+                    <label className="block text-xs font-bold theme-muted tracking-wider uppercase mb-2 ml-1">Issue Title</label>
+                    <input type="text" placeholder="e.g. Broken links..." required className="w-full p-3.5 theme-input rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium text-sm transition-all shadow-inner" value={newTicket.title} onChange={e => setNewTicket({ ...newTicket, title: e.target.value })} />
                   </div>
                   <div className="w-full lg:flex-[1.5]">
-                    <label className="block text-xs font-bold text-slate-400 tracking-wider uppercase mb-2 ml-1">Context</label>
-                    <input type="text" placeholder="Short description..." required className="w-full p-3.5 bg-[#050511] border border-slate-700/80 text-white placeholder-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium text-sm transition-all shadow-inner" value={newTicket.description} onChange={e => setNewTicket({ ...newTicket, description: e.target.value })} />
+                    <label className="block text-xs font-bold theme-muted tracking-wider uppercase mb-2 ml-1">Context</label>
+                    <input type="text" placeholder="Short description..." required className="w-full p-3.5 theme-input rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium text-sm transition-all shadow-inner" value={newTicket.description} onChange={e => setNewTicket({ ...newTicket, description: e.target.value })} />
                   </div>
                   <div className="w-full lg:w-40 shrink-0">
-                    <label className="block text-xs font-bold text-slate-400 tracking-wider uppercase mb-2 ml-1">Priority</label>
-                    <select className="w-full p-3.5 bg-[#050511] border border-slate-700/80 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 font-bold text-sm transition-all shadow-inner" value={newTicket.priority} onChange={e => setNewTicket({ ...newTicket, priority: e.target.value })}>
-                      <option className="bg-slate-900" value="Low">Low</option><option className="bg-slate-900" value="Medium">Medium</option><option className="bg-slate-900" value="High">High</option>
+                    <label className="block text-xs font-bold theme-muted tracking-wider uppercase mb-2 ml-1">Priority</label>
+                    <select className="w-full p-3.5 theme-input rounded-xl focus:ring-2 focus:ring-indigo-500 font-bold text-sm transition-all shadow-inner" value={newTicket.priority} onChange={e => setNewTicket({ ...newTicket, priority: e.target.value })}>
+                      <option className="theme-bg" value="Low">Low</option><option className="theme-bg" value="Medium">Medium</option><option className="theme-bg" value="High">High</option>
                     </select>
                   </div>
                   <button type="submit" className="w-full lg:w-auto bg-indigo-600/90 text-white font-bold px-8 py-3.5 rounded-xl border border-indigo-500/50 shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:bg-indigo-500 transition-all text-sm shrink-0 whitespace-nowrap">
@@ -538,9 +538,8 @@ function Dashboard({ token, handleLogout }) {
               </div>
 
               {/* Trello Board Grid */}
-              <DragDropContext onDragEnd={onDragEnd}>
-                <div className="flex flex-col xl:flex-row gap-6 overflow-x-auto pb-6 custom-scrollbar items-start min-h-[500px]">
-
+              <div className="flex flex-col xl:flex-row gap-6 overflow-x-auto pb-6 custom-scrollbar items-start min-h-[500px]">
+                <DragDropContext onDragEnd={onDragEnd}>
                   {columns.map(col => {
                     const colTickets = filteredTickets.filter(t => t.status === col.status);
 
@@ -548,17 +547,17 @@ function Dashboard({ token, handleLogout }) {
                       <Droppable key={col.status} droppableId={col.status}>
                         {(provided, snapshot) => (
                           <div
-                            className={`flex-1 min-w-[320px] rounded-[2rem] border ${col.border} ${col.bg} p-4 flex flex-col shadow-inner max-h-[70vh] ${snapshot.isDraggingOver ? 'bg-indigo-500/10' : ''}`}
+                            className={`flex-[1] xl:w-[350px] min-w-[320px] rounded-[2rem] border theme-border theme-panel p-4 flex flex-col shadow-inner max-h-[70vh] ${snapshot.isDraggingOver ? 'bg-indigo-500/10' : ''}`}
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                           >
                             {/* Column Header */}
                             <div className="flex justify-between items-center mb-6 px-2 pt-2 shrink-0">
-                              <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                              <h2 className="text-lg font-black theme-text flex items-center gap-2">
                                 <span className={`w-3 h-3 rounded-full bg-${col.color}`}></span>
                                 {col.title}
                               </h2>
-                              <span className="bg-white text-slate-500 shadow-sm border border-slate-200 text-xs px-2.5 py-1 rounded-full font-bold">
+                              <span className="theme-bg theme-muted shadow-sm border theme-border text-xs px-2.5 py-1 rounded-full font-bold">
                                 {colTickets.length}
                               </span>
                             </div>
@@ -566,8 +565,8 @@ function Dashboard({ token, handleLogout }) {
                             {/* Column Cards Container */}
                             <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 flex flex-col gap-3 min-h-0">
                               {colTickets.length === 0 && !snapshot.isDraggingOver ? (
-                                <div className="flex-1 border-2 border-dashed border-slate-300 rounded-2xl flex items-center justify-center min-h-[150px] opacity-50">
-                                  <span className="text-slate-400 font-bold text-sm">Drop here</span>
+                                <div className="flex-1 border-2 border-dashed theme-border rounded-2xl flex items-center justify-center min-h-[150px] opacity-50">
+                                  <span className="theme-muted font-bold text-sm">Drop here</span>
                                 </div>
                               ) : (
                                 colTickets.map((ticket, index) => (
@@ -583,33 +582,33 @@ function Dashboard({ token, handleLogout }) {
                       </Droppable>
                     );
                   })}
-
-                </div>
-              </DragDropContext>
+                  {/* End Columns Map */}
+                </DragDropContext>
+              </div>
             </>
           )}
 
           {/* Footer */}
-          <footer className="mt-16 text-center text-slate-500 text-sm font-medium pb-8 relative z-20">
+          <footer className="mt-16 text-center theme-muted text-sm font-medium pb-8 relative z-20">
             <p className="flex items-center justify-center gap-2">
-              Built with <span className="text-red-500 text-lg drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]">❤️</span> by <a href="https://github.com/MahmoudEsawi" target="_blank" rel="noreferrer" className="text-indigo-400 hover:text-indigo-300 font-bold hover:underline transition-colors">Mahmoud Esawi</a>
+              Built with <span className="text-red-500 text-lg drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]">❤️</span> by <a href="https://github.com/MahmoudEsawi" target="_blank" rel="noreferrer" className="text-indigo-500 hover:text-indigo-400 font-bold hover:underline transition-colors lg:bg-indigo-500/10 lg:px-2 lg:py-0.5 lg:rounded-md lg:border lg:border-indigo-500/20">Mahmoud Esawi</a>
             </p>
           </footer>
 
           {/* Ticket Details & Comments Modal */}
           {selectedTicket && (
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 md:p-8">
-              <div className="glass-panel border-slate-700/50 rounded-[2rem] shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
+            <div className="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 md:p-8 transition-colors">
+              <div className="theme-panel rounded-[2rem] shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
 
                 {/* Modal Header */}
-                <div className="p-6 border-b border-slate-700/50 flex justify-between items-center bg-slate-900/50 shrink-0">
-                  <h3 className="text-xl font-black text-white flex items-center gap-3">
-                    <span className="bg-indigo-500/20 border border-indigo-500/30 p-2 rounded-xl text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                <div className="p-6 theme-border border-b flex justify-between items-center theme-bg shrink-0">
+                  <h3 className="text-xl font-black theme-text flex items-center gap-3">
+                    <span className="bg-indigo-500/20 border border-indigo-500/30 p-2 rounded-xl text-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </span>
                     Ticket Details: {selectedTicket.title}
                   </h3>
-                  <button onClick={() => setSelectedTicket(null)} className="text-slate-400 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-xl transition-colors">
+                  <button onClick={() => setSelectedTicket(null)} className="theme-muted hover:text-red-500 hover:bg-red-500/10 p-2 rounded-xl transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
@@ -618,24 +617,24 @@ function Dashboard({ token, handleLogout }) {
                 <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0 relative">
 
                   {/* Left Column: Timeline & Meta */}
-                  <div className="w-full md:w-1/3 border-r border-slate-800/60 bg-slate-900/30 p-6 md:p-8 overflow-y-auto custom-scrollbar">
+                  <div className="w-full md:w-1/3 border-r theme-border theme-bg p-6 md:p-8 overflow-y-auto custom-scrollbar">
                     <div className="mb-8">
-                      <h4 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Description</h4>
-                      <p className="text-slate-300 font-medium leading-relaxed bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">{selectedTicket.description}</p>
+                      <h4 className="text-sm font-bold theme-muted uppercase tracking-widest mb-2">Description</h4>
+                      <p className="theme-text font-medium leading-relaxed theme-input p-4 rounded-xl">{selectedTicket.description}</p>
                     </div>
 
-                    <h4 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-6">Activity Timeline</h4>
-                    <div className="relative pl-6 border-l-2 border-slate-700/50 space-y-8">
+                    <h4 className="text-sm font-bold theme-muted uppercase tracking-widest mb-6">Activity Timeline</h4>
+                    <div className="relative pl-6 border-l-2 theme-border space-y-8">
                       {/* Creation Event */}
                       <div className="relative">
-                        <div className="absolute -left-[35px] bg-[#050511] p-1 rounded-full border-2 border-slate-600">
+                        <div className="absolute -left-[35px] theme-bg p-1 rounded-full border-2 theme-border">
                           <div className="w-3 h-3 bg-indigo-500 shadow-[0_0_8px_#6366f1] rounded-full"></div>
                         </div>
-                        <p className="text-xs font-bold text-slate-500 mb-1">
+                        <p className="text-xs font-bold theme-muted mb-1">
                           {selectedTicket.createdAt ? format(new Date(selectedTicket.createdAt), 'MMM d, h:mm a') : 'Unknown Date'}
                         </p>
-                        <p className="text-sm font-medium text-slate-300 bg-slate-800/40 p-4 rounded-xl border border-slate-700/50 shadow-sm">
-                          Opened by <strong className="text-indigo-400">{selectedTicket.user?.username || 'Unknown'}</strong>.
+                        <p className="text-sm font-medium theme-text theme-input p-4 rounded-xl shadow-sm">
+                          Opened by <strong className="text-indigo-500">{selectedTicket.user?.username || 'Unknown'}</strong>.
                         </p>
                       </div>
 
@@ -712,44 +711,44 @@ function Dashboard({ token, handleLogout }) {
 
           {/* Profile Modal */}
           {showProfileModal && (
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
-              <div className="glass-panel border-slate-700/50 rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-[scale-in_0.2s_ease-out]">
-                <div className="p-6 border-b border-slate-700/50 flex justify-between items-center bg-slate-900/50">
-                  <h3 className="text-xl font-black text-white flex items-center gap-3">
-                    <span className="bg-fuchsia-500/20 border border-fuchsia-500/30 p-2 rounded-xl text-fuchsia-400 shadow-[0_0_15px_rgba(217,70,239,0.2)]">
+            <div className="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-colors">
+              <div className="theme-panel rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-[scale-in_0.2s_ease-out]">
+                <div className="p-6 theme-border border-b flex justify-between items-center theme-bg">
+                  <h3 className="text-xl font-black theme-text flex items-center gap-3">
+                    <span className="bg-fuchsia-500/20 border border-fuchsia-500/30 p-2 rounded-xl text-fuchsia-500 shadow-[0_0_15px_rgba(217,70,239,0.2)]">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
                     </span>
                     Profile Settings
                   </h3>
-                  <button onClick={() => setShowProfileModal(false)} className="text-slate-400 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-xl transition-colors">
+                  <button onClick={() => setShowProfileModal(false)} className="theme-muted hover:text-red-500 hover:bg-red-500/10 p-2 rounded-xl transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
 
                 <form onSubmit={handleUpdateProfile} className="p-8 space-y-5 bg-transparent">
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Username</label>
+                    <label className="block text-xs font-bold theme-muted uppercase tracking-widest mb-2 ml-1">Username</label>
                     <input
                       type="text"
-                      className="w-full p-4 bg-slate-900 border border-slate-700 text-white rounded-xl focus:ring-2 focus:ring-fuchsia-500 font-medium text-sm transition-all"
+                      className="w-full p-4 theme-input rounded-xl focus:ring-2 focus:ring-fuchsia-500 font-medium text-sm transition-all shadow-inner"
                       value={profileData.username}
                       onChange={e => setProfileData({ ...profileData, username: e.target.value })}
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">New Password</label>
+                    <label className="block text-xs font-bold theme-muted uppercase tracking-widest mb-2 ml-1">New Password</label>
                     <input
                       type="password"
                       placeholder="Leave blank to keep current password"
-                      className="w-full p-4 bg-slate-900 border border-slate-700 text-white placeholder-slate-600 rounded-xl focus:ring-2 focus:ring-fuchsia-500 font-medium text-sm transition-all"
+                      className="w-full p-4 theme-input rounded-xl focus:ring-2 focus:ring-fuchsia-500 font-medium text-sm transition-all shadow-inner"
                       value={profileData.password}
                       onChange={e => setProfileData({ ...profileData, password: e.target.value })}
                     />
                   </div>
 
                   <div className="pt-4">
-                    <button type="submit" className="w-full bg-fuchsia-600 text-white font-bold px-6 py-4 rounded-xl shadow-[0_0_20px_rgba(217,70,239,0.4)] hover:shadow-[0_0_30px_rgba(217,70,239,0.6)] hover:bg-fuchsia-500 hover:-translate-y-0.5 transition-all text-sm">
+                    <button type="submit" className="w-full bg-fuchsia-600 text-white font-bold px-6 py-4 rounded-xl shadow-[0_0_20px_rgba(217,70,239,0.4)] hover:shadow-[0_0_30px_rgba(217,70,239,0.6)] hover:bg-fuchsia-500 hover:-translate-y-0.5 transition-all text-sm whitespace-nowrap">
                       Save Changes
                     </button>
                   </div>
@@ -759,8 +758,8 @@ function Dashboard({ token, handleLogout }) {
           )}
 
         </div>
-      </main>
-    </div>
+      </main >
+    </div >
   );
 }
 
