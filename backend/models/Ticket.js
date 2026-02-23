@@ -28,6 +28,15 @@ const ticketSchema = new mongoose.Schema({
         type: String,
         enum: ['Low', 'Medium', 'High'],
         default: 'Medium'
+    },
+    closedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    closedAt: {
+        type: Date,
+        default: null
     }
 }, { timestamps: true });
 

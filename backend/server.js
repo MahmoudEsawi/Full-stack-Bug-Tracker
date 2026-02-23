@@ -24,7 +24,10 @@ app.use('/api/auth', authRoutes);
 // API لجلب كل التذاكر الخاصة بالفريق
 app.get('/api/tickets', authMiddleware, async (req, res) => {
     try {
-        const tickets = await Ticket.find({ team: req.user.teamId }).sort({ createdAt: -1 });
+        const tickets = await Ticket.find({ team: req.user.teamId })
+            .populate('user', 'username')
+            .populate('closedBy', 'username')
+            .sort({ createdAt: -1 });
         res.json(tickets);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch tickets' });
@@ -57,11 +60,29 @@ app.put('/api/tickets/:id', authMiddleware, async (req, res) => {
             return res.status(401).json({ message: 'User not authorized to update this ticket' });
         }
 
+        // Build the update object dynamically based on the target status
+        const updateData = {};
+        if (req.body.status) {
+            updateData.status = req.body.status;
+
+            if (req.body.status === 'Resolved' || req.body.status === 'Closed') {
+                updateData.closedBy = req.user.id;
+                updateData.closedAt = Date.now();
+            } else {
+                // If reopened, clear the closing metadata
+                updateData.closedBy = null;
+                updateData.closedAt = null;
+            }
+        }
+
         ticket = await Ticket.findByIdAndUpdate(
             req.params.id,
-            { status: req.body.status },
+            updateData,
             { new: true }
-        );
+        )
+            .populate('user', 'username')
+            .populate('closedBy', 'username');
+
         res.json(ticket);
     } catch (err) {
         res.status(500).json({ error: 'Failed to update ticket' });
