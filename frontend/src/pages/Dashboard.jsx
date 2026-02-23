@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
-const API_URL = 'https://full-stack-bug-tracker.onrender.com/api/tickets';
+const API_URL = '/api/tickets';
 
 function Dashboard({ token, handleLogout }) {
   const [tickets, setTickets] = useState([]);

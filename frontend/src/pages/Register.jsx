@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 
-const API_URL = 'https://full-stack-bug-tracker.onrender.com/api/auth/register';
+const API_URL = '/api/auth/register';
 
 function Register({ setToken }) {
     const [formData, setFormData] = useState({ username: '', password: '' });

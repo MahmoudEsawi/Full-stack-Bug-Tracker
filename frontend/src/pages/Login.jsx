@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 
-const API_URL = 'https://full-stack-bug-tracker.onrender.com/api/auth/login';
+const API_URL = '/api/auth/login';
 
 function Login({ setToken }) {
     const [formData, setFormData] = useState({ username: '', password: '' });
