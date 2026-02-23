@@ -239,7 +239,7 @@ function Dashboard({ token, handleLogout }) {
       {...provided?.draggableProps}
       {...provided?.dragHandleProps}
       style={{ ...provided?.draggableProps.style }}
-      className="group p-6 rounded-2xl theme-glass theme-border border hover:border-indigo-400/50 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] relative flex flex-col h-full mb-4"
+      className="group p-5 md:p-6 rounded-2xl theme-glass theme-border border hover:border-indigo-400/50 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] relative flex flex-col min-h-[220px] mb-4 shrink-0 transition-colors"
     >
 
       {/* Top Banner (Priority & Date) */}
@@ -551,7 +551,7 @@ function Dashboard({ token, handleLogout }) {
                       <Droppable key={col.status} droppableId={col.status}>
                         {(provided, snapshot) => (
                           <div
-                            className={`flex-[1] xl:w-[350px] min-w-[85vw] sm:min-w-[320px] snap-center rounded-[2rem] border theme-border theme-panel p-4 flex flex-col shadow-inner max-h-[70vh] md:max-h-[80vh] ${snapshot.isDraggingOver ? 'bg-indigo-500/10' : ''}`}
+                            className={`flex-[1] xl:w-[350px] min-w-[85vw] sm:min-w-[320px] snap-center rounded-[2rem] border theme-border theme-panel p-4 flex flex-col shadow-inner h-[70vh] md:max-h-[80vh] md:h-auto ${snapshot.isDraggingOver ? 'bg-indigo-500/10' : ''}`}
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                           >
@@ -567,7 +567,7 @@ function Dashboard({ token, handleLogout }) {
                             </div>
 
                             {/* Column Cards Container */}
-                            <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 flex flex-col gap-3 min-h-0">
+                            <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 flex flex-col gap-3 min-h-0 pb-4">
                               {colTickets.length === 0 && !snapshot.isDraggingOver ? (
                                 <div className="flex-1 border-2 border-dashed theme-border rounded-2xl flex items-center justify-center min-h-[150px] opacity-50">
                                   <span className="theme-muted font-bold text-sm">Drop here</span>
