@@ -13,11 +13,15 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 6
     },
-    teamCode: {
+    team: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Team',
+        default: null
+    },
+    role: {
         type: String,
-        required: true,
-        trim: true,
-        uppercase: true
+        enum: ['Admin', 'Member'],
+        default: 'Member'
     }
 }, { timestamps: true });
 

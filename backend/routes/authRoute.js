@@ -2,6 +2,8 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Team = require('../models/Team');
+const crypto = require('crypto');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -9,7 +11,7 @@ const router = express.Router();
 // @route   POST /api/auth/register
 // @desc    Register a new user
 router.post('/register', async (req, res) => {
-    const { username, password, teamCode } = req.body;
+    const { username, password } = req.body;
 
     try {
         // Check if user already exists
@@ -18,7 +20,7 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        user = new User({ username, password, teamCode });
+        user = new User({ username, password });
 
         // Hash the password
         const salt = await bcrypt.genSalt(10);
@@ -42,7 +44,7 @@ router.post('/register', async (req, res) => {
             { expiresIn: '7d' }, // Token valid for 7 days
             (err, token) => {
                 if (err) throw err;
-                res.json({ token, user: { id: user.id, username: user.username, teamCode: user.teamCode } });
+                res.json({ token, user: { id: user.id, username: user.username, teamId: user.team, role: user.role } });
             }
         );
 
@@ -75,7 +77,8 @@ router.post('/login', async (req, res) => {
             user: {
                 id: user.id,
                 username: user.username,
-                teamCode: user.teamCode
+                teamId: user.team,
+                role: user.role
             }
         };
 
@@ -86,7 +89,7 @@ router.post('/login', async (req, res) => {
             { expiresIn: '7d' },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token, user: { id: user.id, username: user.username, teamCode: user.teamCode } });
+                res.json({ token, user: { id: user.id, username: user.username, teamId: user.team, role: user.role } });
             }
         );
 
@@ -96,44 +99,88 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// @route   PUT /api/auth/team
-// @desc    Change user's team code and get new token
-router.put('/team', authMiddleware, async (req, res) => {
-    const { newTeamCode } = req.body;
+// @route   POST /api/auth/team/create
+// @desc    Create a new team and become Admin
+router.post('/team/create', authMiddleware, async (req, res) => {
+    const { teamName } = req.body;
 
     try {
-        if (!newTeamCode) {
-            return res.status(400).json({ message: 'New Team Code is required' });
+        if (!teamName || teamName.trim() === '') {
+            return res.status(400).json({ message: 'Team Name is required' });
         }
 
-        // Find user and update team code
+        // Generate a 6-character random alphanumeric code
+        const code = crypto.randomBytes(3).toString('hex').toUpperCase();
+
+        const newTeam = new Team({
+            name: teamName,
+            code,
+            admin: req.user.id
+        });
+
+        await newTeam.save();
+
+        // Update User
         let user = await User.findById(req.user.id);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        user.teamCode = newTeamCode.toUpperCase().trim();
+        user.team = newTeam._id;
+        user.role = 'Admin';
         await user.save();
 
-        // Create new JWT Payload
         const payload = {
             user: {
                 id: user.id,
                 username: user.username,
-                teamCode: user.teamCode
+                teamId: user.team,
+                role: user.role
             }
         };
 
-        // Sign and return the new token
-        jwt.sign(
-            payload,
-            process.env.JWT_SECRET,
-            { expiresIn: '7d' },
-            (err, token) => {
-                if (err) throw err;
-                res.json({ token, user: { id: user.id, username: user.username, teamCode: user.teamCode } });
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, token) => {
+            if (err) throw err;
+            res.json({ token, team: newTeam });
+        });
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /api/auth/team/join
+// @desc    Join an existing team as Member using its unique code
+router.post('/team/join', authMiddleware, async (req, res) => {
+    const { teamCode } = req.body;
+
+    try {
+        if (!teamCode) {
+            return res.status(400).json({ message: 'Team Code is required' });
+        }
+
+        // Find Team by code
+        const team = await Team.findOne({ code: teamCode.toUpperCase().trim() });
+        if (!team) {
+            return res.status(404).json({ message: 'Invalid Team Code' });
+        }
+
+        // Update User
+        let user = await User.findById(req.user.id);
+        user.team = team._id;
+        user.role = 'Member';
+        await user.save();
+
+        const payload = {
+            user: {
+                id: user.id,
+                username: user.username,
+                teamId: user.team,
+                role: user.role
             }
-        );
+        };
+
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, token) => {
+            if (err) throw err;
+            res.json({ token, team });
+        });
 
     } catch (err) {
         console.error(err.message);
