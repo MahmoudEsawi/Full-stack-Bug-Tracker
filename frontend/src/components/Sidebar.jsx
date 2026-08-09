@@ -1,385 +1,444 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import { Link } from 'react-router-dom';
 
-function Sidebar({ token, handleLogout, isOpen, toggleSidebar, onOpenProfile, theme, toggleTheme, projects, fetchProjects, selectedProjectId, setSelectedProjectId }) {
-    const [teamName, setTeamName] = useState('');
-    const [joinCode, setJoinCode] = useState('');
-    const [projectName, setProjectName] = useState('');
-    const [projectDesc, setProjectDesc] = useState('');
-    const [isCreatingProject, setIsCreatingProject] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [teamData, setTeamData] = useState(null);
+function Sidebar({
+  token,
+  handleLogout,
+  isOpen,
+  toggleSidebar,
+  onOpenProfile,
+  theme,
+  toggleTheme,
+  projects,
+  fetchProjects,
+  selectedProjectId,
+  setSelectedProjectId
+}) {
+  const [teamName, setTeamName] = useState('');
+  const [joinCode, setJoinCode] = useState('');
+  const [projectName, setProjectName] = useState('');
+  const [projectDesc, setProjectDesc] = useState('');
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [teamData, setTeamData] = useState(null);
 
-    // Setup Axios Auth Header
-    const authConfig = {
-        headers: { Authorization: `Bearer ${token}` }
-    };
+  // Setup Axios Auth Header
+  const authConfig = {
+    headers: { Authorization: `Bearer ${token}` }
+  };
 
-    const decodedToken = jwtDecode(token);
-    const user = decodedToken?.user || {};
+  const decodedToken = jwtDecode(token);
+  const user = decodedToken?.user || {};
 
+  useEffect(() => {
+    if (user.teamId) {
+      fetchTeamData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.teamId]);
 
-    useEffect(() => {
-        if (user.teamId) {
-            fetchTeamData();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user.teamId]);
+  const fetchTeamData = async () => {
+    try {
+      const res = await axios.get('/api/auth/team', authConfig);
+      setTeamData(res.data);
+    } catch (error) {
+      console.error('Error fetching team data:', error);
+    }
+  };
 
-    const fetchTeamData = async () => {
-        try {
-            console.log("Fetching team data... Token:", token.substring(0, 10));
-            const res = await axios.get('/api/auth/team', authConfig);
-            console.log("Fetched team data:", res.data);
-            setTeamData(res.data);
-        } catch (error) {
-            console.error("Error fetching team data:", error);
-        }
-    };
+  const handleCreateTeam = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await axios.post('/api/auth/team/create', { teamName }, authConfig);
+      localStorage.setItem('token', res.data.token);
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || 'Failed to create team.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleCreateTeam = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            const res = await axios.post('/api/auth/team/create', { teamName }, authConfig);
-            localStorage.setItem('token', res.data.token);
-            window.location.reload();
-        } catch (error) {
-            console.error(error);
-            alert(error.response?.data?.message || "Failed to create team.");
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleJoinTeam = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await axios.post('/api/auth/team/join', { teamCode: joinCode }, authConfig);
+      localStorage.setItem('token', res.data.token);
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || 'Invalid Team Code.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleJoinTeam = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            const res = await axios.post('/api/auth/team/join', { teamCode: joinCode }, authConfig);
-            localStorage.setItem('token', res.data.token);
-            window.location.reload();
-        } catch (error) {
-            console.error(error);
-            alert(error.response?.data?.message || "Invalid Team Code.");
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleCopyCode = () => {
+    if (teamData?.code) {
+      navigator.clipboard.writeText(teamData.code);
+      alert(`Invite code "${teamData.code}" copied to clipboard! Share it with your team.`);
+    }
+  };
 
-    const handleCopyCode = () => {
-        if (teamData?.code) {
-            navigator.clipboard.writeText(teamData.code);
-            alert(`Invite code ${teamData.code} copied to clipboard! Share it with your team.`);
-        }
-    };
+  const handleCreateProject = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await axios.post('/api/projects', { name: projectName, description: projectDesc }, authConfig);
+      setProjectName('');
+      setProjectDesc('');
+      setIsCreatingProject(false);
+      await fetchProjects();
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || 'Failed to create project.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleCreateProject = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            await axios.post('/api/projects', { name: projectName, description: projectDesc }, authConfig);
-            setProjectName('');
-            setProjectDesc('');
-            setIsCreatingProject(false);
-            await fetchProjects();
-        } catch (error) {
-            console.error(error);
-            alert(error.response?.data?.message || "Failed to create project.");
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleKickMember = async (memberId) => {
+    if (!window.confirm('Are you sure you want to remove this member from the team?')) return;
 
-    const handleKickMember = async (memberId) => {
-        if (!window.confirm("Are you sure you want to remove this member from the team?")) return;
+    try {
+      await axios.delete(`/api/auth/team/kick/${memberId}`, authConfig);
+      const res = await axios.get('/api/auth/team', authConfig);
+      setTeamData(res.data);
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || 'Failed to remove member.');
+    }
+  };
 
-        try {
-            await axios.delete(`/api/auth/team/kick/${memberId}`, authConfig);
-            // Refresh team data
-            const res = await axios.get('/api/auth/team', authConfig);
-            setTeamData(res.data);
-        } catch (error) {
-            console.error(error);
-            alert(error.response?.data?.message || "Failed to remove member.");
-        }
-    };
+  const handleDeleteProject = async (e, projectId, pName) => {
+    e.stopPropagation();
+    if (!window.confirm(`Are you sure you want to delete the project '${pName}' and all its tickets?`)) return;
 
-    const handleDeleteProject = async (e, projectId, projectName) => {
-        e.stopPropagation(); // Prevent selecting the project when clicking delete
-        if (!window.confirm(`Are you sure you want to delete the project '${projectName}' and ALL its tickets? This cannot be undone.`)) return;
+    setLoading(true);
+    try {
+      await axios.delete(`/api/projects/${projectId}`, authConfig);
+      if (selectedProjectId === projectId) {
+        setSelectedProjectId(null);
+      }
+      await fetchProjects();
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || 'Failed to delete project.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        setLoading(true);
-        try {
-            await axios.delete(`/api/projects/${projectId}`, authConfig);
-            // If the deleted project was selected, reset the selection
-            if (selectedProjectId === projectId) {
-                setSelectedProjectId(null);
-            }
-            await fetchProjects();
-        } catch (error) {
-            console.error(error);
-            alert(error.response?.data?.message || "Failed to delete project.");
-        } finally {
-            setLoading(false);
-        }
-    };
+  return (
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 md:hidden transition-opacity"
+          onClick={toggleSidebar}
+        />
+      )}
 
-    return (
-        <>
-            {/* Mobile Overlay Background - Only shown when Sidebar is open on small screens */}
-            {isOpen && (
-                <div
-                    className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 md:hidden transition-opacity duration-300"
-                    onClick={toggleSidebar}
-                ></div>
-            )}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-[85vw] max-w-sm sm:w-80 h-[100dvh] theme-panel backdrop-blur-3xl shadow-2xl theme-text md:relative transform transition-all duration-300 ease-out shrink-0 border-r-2 theme-border md:rounded-r-3xl overflow-hidden ${
+          isOpen
+            ? 'translate-x-0 opacity-100 md:w-80'
+            : '-translate-x-full opacity-0 md:border-none md:w-0 md:translate-x-0'
+        }`}
+      >
+        <div className="w-[85vw] max-w-sm sm:w-80 h-full flex flex-col shrink-0 relative p-6 custom-scrollbar overflow-y-auto">
+          
+          {/* Close Sidebar Trigger */}
+          <button
+            onClick={toggleSidebar}
+            className="absolute top-5 right-5 p-2 rounded-xl theme-panel theme-border border theme-muted hover:text-red-500 transition-colors z-20"
+            title="Close Sidebar"
+          >
+            ✕
+          </button>
 
-            <aside className={`fixed inset-y-0 left-0 z-50 flex flex-col w-[85vw] max-w-sm sm:w-80 h-[100dvh] theme-panel backdrop-blur-3xl shadow-[4px_0_24px_rgba(0,0,0,0.5)] custom-scrollbar theme-text md:relative transform transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] shrink-0 theme-border md:rounded-r-[2rem] overflow-hidden
-              ${isOpen
-                    ? 'translate-x-0 border-r opacity-100 md:w-80'
-                    : '-translate-x-full opacity-0 md:border-none md:w-0 md:translate-x-0'
-                }
-            `}>
+          {/* Logo & Header */}
+          <div className="mb-6 shrink-0 pr-8">
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <div className="w-8 h-8 rounded-lg bg-[#facc15] text-[#08241b] font-syne font-black flex items-center justify-center text-lg shadow-md group-hover:scale-105 transition-transform">
+                ⚡
+              </div>
+              <div>
+                <span className="font-syne font-black text-xl tracking-tight theme-text block leading-none">
+                  SyncIssue
+                </span>
+                <span className="text-[9px] font-mono uppercase tracking-widest text-[#22c55e] font-bold block mt-0.5">
+                  NATURE-TECH PORTAL
+                </span>
+              </div>
+            </Link>
+          </div>
 
-                <div className="w-[85vw] max-w-sm sm:w-80 h-full flex flex-col shrink-0 relative p-6">
-                    {/* Close Button (Visible on all screens to hide the Sidebar) */}
-                    <button
-                        onClick={toggleSidebar}
-                        className="absolute top-6 right-6 theme-bg theme-border border p-2 rounded-xl theme-muted hover:text-red-500 hover:bg-red-500/10 transition-colors z-20"
-                        title="Close Sidebar"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+          {!user.teamId ? (
+            <div className="flex-1 space-y-6">
+              {/* Create Team State */}
+              <div className="theme-panel p-5 rounded-2xl border theme-border shadow-inner">
+                <h3 className="font-syne font-bold text-sm theme-text mb-3 flex items-center gap-2">
+                  <span>🚀</span>
+                  <span>Create Workspace</span>
+                </h3>
+                <form onSubmit={handleCreateTeam} className="space-y-3">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Workspace Name"
+                    className="w-full theme-input rounded-xl p-2.5 text-xs font-medium border theme-border focus:ring-2 focus:ring-[#22c55e] focus:outline-none"
+                    value={teamName}
+                    onChange={e => setTeamName(e.target.value)}
+                  />
+                  <button
+                    disabled={loading}
+                    className="w-full bg-[#facc15] text-[#08241b] font-syne font-extrabold py-2.5 rounded-xl text-xs shadow-md hover:scale-105 transition-transform"
+                  >
+                    {loading ? 'Creating...' : 'Create & Become Admin'}
+                  </button>
+                </form>
+              </div>
 
-                    <div className="mb-10 text-center md:text-left mt-4 md:mt-0 relative shrink-0">
-                        <div className="absolute top-1/2 left-4 w-12 h-12 bg-indigo-500/20 blur-[20px] rounded-full pointer-events-none -translate-y-1/2"></div>
-                        <h1 className="text-3xl font-black theme-text tracking-tight flex items-center justify-center md:justify-start gap-2 relative z-10 w-max">
-                            <span className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-sm shadow-[0_0_15px_rgba(99,102,241,0.5)] border border-indigo-400/50">S</span>
-                            SyncIssue<span className="text-fuchsia-500 text-lg">v2</span>
-                        </h1>
-                        <p className="theme-muted text-xs mt-2 uppercase tracking-widest font-bold w-max">Workspace Portal</p>
-                    </div>
+              <div className="flex items-center gap-2 text-[10px] font-mono theme-muted tracking-widest uppercase">
+                <div className="h-px border-t theme-border flex-1" />
+                <span>OR</span>
+                <div className="h-px border-t theme-border flex-1" />
+              </div>
 
-                    {!user.teamId ? (
-                        <div className="flex-1 overflow-y-auto pr-2 space-y-8 custom-scrollbar">
-                            {/* No Team State */}
-                            <div className="theme-panel p-6 rounded-2xl shadow-inner">
-                                <h3 className="theme-text font-bold mb-4 flex items-center gap-2">
-                                    <span className="text-xl">🚀</span> Create Workspace
-                                </h3>
-                                <form onSubmit={handleCreateTeam} className="flex flex-col gap-3">
-                                    <input
-                                        type="text" required placeholder="Enter Workspace Name"
-                                        className="w-full theme-input rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
-                                        value={teamName} onChange={e => setTeamName(e.target.value)}
-                                    />
-                                    <button disabled={loading} className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all text-sm">
-                                        {loading ? 'Processing...' : 'Create & Become Admin'}
-                                    </button>
-                                </form>
-                            </div>
-
-                            <div className="flex items-center gap-4 theme-muted text-[10px] font-black tracking-widest uppercase w-full">
-                                <div className="h-px theme-border border-t flex-1"></div>
-                                <span>OR</span>
-                                <div className="h-px theme-border border-t flex-1"></div>
-                            </div>
-
-                            <div className="theme-panel p-6 rounded-2xl shadow-inner">
-                                <h3 className="theme-text font-bold mb-4 flex items-center gap-2">
-                                    <span className="text-xl">🤝</span> Join Existing Team
-                                </h3>
-                                <p className="text-[11px] theme-muted mb-4 leading-relaxed font-medium">Ask your Team Admin for the 6-character Unique Invite Code.</p>
-                                <form onSubmit={handleJoinTeam} className="flex flex-col gap-3">
-                                    <input
-                                        type="text" required placeholder="e.g. A1B2C3" maxLength={6}
-                                        className="w-full theme-input rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none uppercase font-mono tracking-widest text-center transition-all"
-                                        value={joinCode} onChange={e => setJoinCode(e.target.value)}
-                                    />
-                                    <button disabled={loading} className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all text-sm">
-                                        {loading ? 'Verifying...' : 'Join Workspace'}
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 min-h-0 flex flex-col gap-6">
-                            {/* Active Team State */}
-
-                            {/* Profile Header */}
-                            <div className="bg-indigo-500/10 border border-indigo-500/20 p-5 rounded-2xl flex flex-col items-center justify-center text-center relative overflow-hidden shrink-0">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-500/10 blur-[40px] rounded-full"></div>
-                                <div className="w-16 h-16 bg-indigo-500 border border-indigo-400/50 rounded-full flex items-center justify-center text-2xl font-black text-white mb-3 shadow-[0_0_20px_rgba(99,102,241,0.5)] relative z-10">
-                                    {user.username.charAt(0).toUpperCase()}
-                                </div>
-                                <h2 className="theme-text font-bold text-lg relative z-10">{user.username}</h2>
-                                <span className={`mt-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest relative z-10 ${user.role === 'Admin' ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30' : 'theme-panel theme-muted'}`}>
-                                    {user.role}
-                                </span>
-                            </div>
-
-                            {/* Status */}
-                            <div className="flex items-center justify-between p-4 theme-panel rounded-xl shadow-inner shrink-0">
-                                <span className="text-sm font-medium theme-muted">Status</span>
-                                <span className="flex items-center gap-2 text-xs font-bold text-emerald-500 tracking-wider uppercase">
-                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span> Online
-                                </span>
-                            </div>
-
-                            {/* Projects Section */}
-                            <div className="shrink-0">
-                                <div className="flex items-center justify-between mb-3 px-1">
-                                    <h3 className="text-[10px] font-black theme-muted uppercase tracking-widest">Projects</h3>
-                                    <span className="theme-bg theme-border border text-xs px-2 py-0.5 rounded-full font-bold theme-muted">{projects?.length || 0}</span>
-                                </div>
-
-                                <div className="space-y-2 mb-4">
-                                    {projects?.length === 0 ? (
-                                        <p className="text-xs theme-muted font-medium">No projects found. Create one below.</p>
-                                    ) : (
-                                        projects.map(project => (
-                                            <div
-                                                key={project._id}
-                                                onClick={() => setSelectedProjectId(project._id)}
-                                                className={`flex items-center justify-between gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 group ${selectedProjectId === project._id ? 'bg-indigo-500/20 border border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.15)] translate-x-1' : 'theme-panel theme-border border hover:border-indigo-500/30 hover:bg-indigo-500/5'}`}
-                                            >
-                                                <div className="flex items-center gap-3 overflow-hidden flex-1">
-                                                    <div className={`w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold shadow-sm transition-colors ${selectedProjectId === project._id ? 'bg-indigo-500 text-white' : 'theme-bg theme-border border theme-muted group-hover:border-indigo-500/50 group-hover:text-indigo-400'}`}>
-                                                        {project.name.substring(0, 2).toUpperCase()}
-                                                    </div>
-                                                    <p className={`text-sm font-bold truncate transition-colors ${selectedProjectId === project._id ? 'text-indigo-500' : 'theme-text group-hover:text-indigo-400'}`}>{project.name}</p>
-                                                </div>
-
-                                                {/* Delete Project Button (Only visible on hover or if selected, and if Admin or Creator) */}
-                                                {(user.role === 'Admin' || project.createdBy === user.id) && (
-                                                    <button
-                                                        onClick={(e) => handleDeleteProject(e, project._id, project.name)}
-                                                        className={`p-1.5 rounded-lg shrink-0 transition-all ${selectedProjectId === project._id ? 'text-red-400 hover:bg-red-500/20 hover:text-red-500' : 'text-transparent hover:bg-red-500/10 hover:text-red-500 group-hover:text-red-400/50'}`}
-                                                        title="Delete Project"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
-                                                    </button>
-                                                )}
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-
-                                {isCreatingProject ? (
-                                    <form onSubmit={handleCreateProject} className="theme-panel border border-indigo-500/30 p-3.5 rounded-xl flex flex-col gap-3 shadow-[0_0_20px_rgba(99,102,241,0.1)] transition-all">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">New Project</span>
-                                            <button type="button" onClick={() => setIsCreatingProject(false)} className="theme-muted hover:text-red-500">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                                            </button>
-                                        </div>
-                                        <input type="text" placeholder="Project Name" required autoFocus className="theme-input theme-border border rounded-lg p-2.5 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium" value={projectName} onChange={e => setProjectName(e.target.value)} />
-                                        <button disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_10px_rgba(99,102,241,0.4)] text-xs font-bold py-2.5 rounded-lg transition-all">
-                                            {loading ? 'Creating...' : 'Create Project'}
-                                        </button>
-                                    </form>
-                                ) : (
-                                    <button
-                                        onClick={() => setIsCreatingProject(true)}
-                                        className="w-full theme-bg hover:theme-panel theme-muted hover:text-indigo-500 theme-border border text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                                        Create Project
-                                    </button>
-                                )}
-                            </div>
-
-                            {/* Team Members List */}
-                            {teamData?.members && teamData.members.length > 0 && (
-                                <div className="shrink-0">
-                                    <div className="flex items-center justify-between mb-3 px-1">
-                                        <h3 className="text-[10px] font-black theme-muted uppercase tracking-widest">Team Members</h3>
-                                        <span className="theme-bg theme-border border text-xs px-2 py-0.5 rounded-full font-bold theme-muted">{teamData.members.length}</span>
-                                    </div>
-                                    <div className="space-y-2">
-                                        {teamData.members.map(member => (
-                                            <div key={member._id} className="flex items-center gap-3 p-3 rounded-xl theme-panel theme-border border hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-colors group">
-                                                <div className="w-8 h-8 rounded-full theme-bg theme-border border flex items-center justify-center text-xs font-bold theme-muted shadow-sm group-hover:border-indigo-500/50 transition-colors shrink-0">
-                                                    {member.username.charAt(0).toUpperCase()}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-bold theme-text truncate group-hover:text-indigo-400 transition-colors">{member.username}</p>
-                                                    <p className={`text-[9px] font-bold uppercase tracking-widest ${member.role === 'Admin' ? 'text-amber-500' : 'theme-muted'}`}>
-                                                        {member.role}
-                                                    </p>
-                                                </div>
-
-                                                {/* Kick Member Button (Only Admin sees it, and cannot kick themselves) */}
-                                                {user.role === 'Admin' && member._id !== user.id && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleKickMember(member._id);
-                                                        }}
-                                                        className="opacity-0 group-hover:opacity-100 theme-muted hover:text-red-500 p-1.5 hover:bg-red-500/10 rounded-lg transition-all border border-transparent hover:border-red-500/20"
-                                                        title={`Kick ${member.username}`}
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M22 10.5h-6m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" /></svg>
-                                                    </button>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Only Admins can see raw invite code concepts */}
-                            {user.role === 'Admin' && (
-                                <div className="p-4 bg-amber-500/5 rounded-xl border border-amber-500/20 mt-4 relative overflow-hidden shrink-0">
-                                    <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 blur-[30px] rounded-full pointer-events-none"></div>
-                                    <span className="block text-[10px] font-black text-amber-500 uppercase tracking-widest mb-2 relative z-10">Team Management</span>
-                                    <p className="text-[11px] text-amber-500/80 mb-4 leading-relaxed font-medium relative z-10">As an Admin, share this invite code to add members.</p>
-
-                                    <div className="theme-input border border-amber-500/30 rounded-lg p-3 flex justify-center items-center mb-3 shadow-inner relative z-10">
-                                        <span className="font-mono text-amber-500 font-black tracking-widest text-xl">{teamData?.code || "Loading..."}</span>
-                                    </div>
-
-                                    <button
-                                        onClick={handleCopyCode}
-                                        className="w-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-500 font-bold py-2.5 rounded-lg text-xs transition-colors shadow-[0_0_15px_rgba(245,158,11,0.1)] hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] flex items-center justify-center gap-2 relative z-10"
-                                    >
-                                        Copy Invite Code
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Footer Area */}
-                    <div className="mt-auto pt-6 shrink-0 z-10 bg-gradient-to-t from-[var(--bg-app)] to-transparent md:bg-none">
-                        <button
-                            onClick={handleLogout}
-                            className="w-full mb-3 flex items-center justify-center gap-2 theme-input hover:theme-panel theme-muted hover:text-red-500 theme-border border hover:border-red-500/30 py-3 rounded-xl font-bold transition-all text-sm"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-                            </svg>
-                            Sign Out
-                        </button>
-
-                        <button
-                            onClick={onOpenProfile}
-                            className="w-full flex items-center justify-center gap-2 theme-bg hover:theme-panel theme-muted hover:text-indigo-500 theme-border border hover:border-indigo-500/30 py-3 rounded-xl font-bold transition-all text-sm mb-3"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            Profile Settings
-                        </button>
-                    </div>
+              {/* Join Team State */}
+              <div className="theme-panel p-5 rounded-2xl border theme-border shadow-inner">
+                <h3 className="font-syne font-bold text-sm theme-text mb-1 flex items-center gap-2">
+                  <span>🤝</span>
+                  <span>Join Team</span>
+                </h3>
+                <p className="text-[10px] theme-muted font-sans mb-3">
+                  Enter the 6-character invite code from your admin.
+                </p>
+                <form onSubmit={handleJoinTeam} className="space-y-3">
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. ALPHA1"
+                    maxLength={6}
+                    className="w-full theme-input rounded-xl p-2.5 text-xs font-mono font-bold tracking-widest text-center border theme-border uppercase focus:ring-2 focus:ring-[#22c55e] focus:outline-none"
+                    value={joinCode}
+                    onChange={e => setJoinCode(e.target.value)}
+                  />
+                  <button
+                    disabled={loading}
+                    className="w-full bg-[#22c55e] text-[#08241b] font-syne font-extrabold py-2.5 rounded-xl text-xs shadow-md hover:scale-105 transition-transform"
+                  >
+                    {loading ? 'Joining...' : 'Join Workspace'}
+                  </button>
+                </form>
+              </div>
+            </div>
+          ) : (
+            <div className="flex-1 space-y-6 min-h-0">
+              
+              {/* User Profile Card */}
+              <div className="theme-panel p-4 rounded-2xl border-2 theme-border flex items-center gap-3 relative overflow-hidden shadow-sm">
+                <div className="w-11 h-11 rounded-xl bg-[#0d382b] text-[#facc15] border-2 border-[#22c55e]/40 font-syne font-black text-base flex items-center justify-center shadow-md shrink-0">
+                  {user.username?.charAt(0).toUpperCase()}
                 </div>
-            </aside>
-        </>
-    );
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-syne font-bold text-sm theme-text truncate">
+                    {user.username}
+                  </h2>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span
+                      className={`text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+                        user.role === 'Admin'
+                          ? 'bg-[#facc15]/20 text-[#facc15] border border-[#facc15]/30'
+                          : 'bg-[#22c55e]/20 text-[#4ade80] border border-[#22c55e]/30'
+                      }`}
+                    >
+                      {user.role}
+                    </span>
+                    <span className="text-[10px] font-mono text-emerald-500 font-bold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Online
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Projects List */}
+              <div>
+                <div className="flex items-center justify-between mb-2 px-1 text-xs font-mono">
+                  <span className="font-bold theme-muted uppercase tracking-wider">Project Scopes</span>
+                  <span className="theme-bg px-2 py-0.5 rounded-full font-bold theme-border border text-[10px]">
+                    {projects?.length || 0}
+                  </span>
+                </div>
+
+                <div className="space-y-1.5 mb-3">
+                  {projects?.length === 0 ? (
+                    <p className="text-xs font-sans theme-muted p-2">No projects yet. Create one below.</p>
+                  ) : (
+                    projects.map(project => (
+                      <div
+                        key={project._id}
+                        onClick={() => setSelectedProjectId(project._id)}
+                        className={`flex items-center justify-between gap-2 p-2.5 rounded-xl cursor-pointer transition-all ${
+                          selectedProjectId === project._id
+                            ? 'bg-[#22c55e]/20 border-2 border-[#22c55e] text-[#facc15] font-bold shadow-sm translate-x-1'
+                            : 'theme-panel theme-border border hover:border-[#22c55e]/50 hover:bg-[#22c55e]/5'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 overflow-hidden flex-1">
+                          <span className="text-xs">🗂️</span>
+                          <p className="text-xs truncate font-syne">{project.name}</p>
+                        </div>
+
+                        {(user.role === 'Admin' || project.createdBy === user.id) && (
+                          <button
+                            onClick={e => handleDeleteProject(e, project._id, project.name)}
+                            className="p-1 rounded text-red-400 hover:bg-red-500/20 hover:text-red-500 transition-colors shrink-0 text-xs"
+                            title="Delete Project"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {isCreatingProject ? (
+                  <form onSubmit={handleCreateProject} className="theme-panel border-2 theme-border p-3 rounded-xl space-y-2">
+                    <div className="flex items-center justify-between text-[10px] font-mono font-bold theme-muted">
+                      <span>NEW PROJECT</span>
+                      <button type="button" onClick={() => setIsCreatingProject(false)}>✕</button>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Project Name"
+                      required
+                      autoFocus
+                      className="w-full theme-input rounded-lg p-2 text-xs border theme-border font-medium focus:ring-1 focus:ring-[#22c55e]"
+                      value={projectName}
+                      onChange={e => setProjectName(e.target.value)}
+                    />
+                    <button
+                      disabled={loading}
+                      className="w-full bg-[#22c55e] text-[#08241b] font-syne font-bold text-xs py-2 rounded-lg"
+                    >
+                      {loading ? 'Creating...' : 'Create Project'}
+                    </button>
+                  </form>
+                ) : (
+                  <button
+                    onClick={() => setIsCreatingProject(true)}
+                    className="w-full py-2 theme-panel hover:bg-[#22c55e]/15 theme-border border text-xs font-mono font-bold rounded-xl transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <span>+</span>
+                    <span>New Project Scope</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Team Members */}
+              {teamData?.members && teamData.members.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-2 px-1 text-xs font-mono">
+                    <span className="font-bold theme-muted uppercase tracking-wider">Team Roster</span>
+                    <span className="theme-bg px-2 py-0.5 rounded-full font-bold theme-border border text-[10px]">
+                      {teamData.members.length}
+                    </span>
+                  </div>
+
+                  <div className="space-y-1.5 max-h-36 overflow-y-auto custom-scrollbar pr-1">
+                    {teamData.members.map(member => (
+                      <div
+                        key={member._id}
+                        className="flex items-center gap-2.5 p-2 rounded-xl theme-panel border theme-border group text-xs font-mono"
+                      >
+                        <div className="w-6 h-6 rounded-md bg-[#0d382b] text-[#a7f3d0] flex items-center justify-center text-[10px] font-bold shrink-0">
+                          {member.username.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="truncate font-bold theme-text">{member.username}</p>
+                          <p className="text-[9px] theme-muted opacity-70">{member.role}</p>
+                        </div>
+
+                        {user.role === 'Admin' && member._id !== user.id && (
+                          <button
+                            onClick={e => {
+                              e.stopPropagation();
+                              handleKickMember(member._id);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 p-1 text-xs"
+                            title="Remove Member"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Admin Invite Code Badge */}
+              {user.role === 'Admin' && (
+                <div className="p-3.5 bg-[#facc15]/10 rounded-2xl border-2 border-[#facc15]/30 space-y-2">
+                  <div className="flex items-center justify-between text-[10px] font-mono font-bold text-[#facc15]">
+                    <span>INVITE CODE</span>
+                    <span className="text-[9px] opacity-70">6 CHAR</span>
+                  </div>
+                  <div className="theme-input p-2 rounded-xl text-center font-mono font-black text-lg tracking-widest text-[#facc15] border theme-border">
+                    {teamData?.code || 'ALPHA1'}
+                  </div>
+                  <button
+                    onClick={handleCopyCode}
+                    className="w-full bg-[#facc15] hover:bg-[#eab308] text-[#08241b] font-syne font-black text-xs py-2 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5"
+                  >
+                    <span>📋 Copy Invite Code</span>
+                  </button>
+                </div>
+              )}
+
+            </div>
+          )}
+
+          {/* Sidebar Footer */}
+          <div className="mt-auto pt-4 border-t theme-border space-y-2 shrink-0">
+            <Link
+              to="/"
+              className="w-full py-2.5 theme-panel hover:bg-[#22c55e]/15 border theme-border text-xs font-mono font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+            >
+              <span>🌿</span>
+              <span>Back to Landing</span>
+            </Link>
+
+            <button
+              onClick={onOpenProfile}
+              className="w-full py-2.5 theme-panel hover:bg-[#22c55e]/15 border theme-border text-xs font-mono font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+            >
+              <span>⚙️</span>
+              <span>Profile Settings</span>
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="w-full py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 text-xs font-mono font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+            >
+              <span>🚪</span>
+              <span>Sign Out</span>
+            </button>
+          </div>
+
+        </div>
+      </aside>
+    </>
+  );
 }
 
 export default Sidebar;
